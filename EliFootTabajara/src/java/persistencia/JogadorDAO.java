@@ -25,6 +25,7 @@ public class JogadorDAO implements DAO<Jogador> {
         query.setInt(2, e.getTime().getId());
         query.executeUpdate();
         ResultSet rs = query.getGeneratedKeys();
+        rs.next();
         e.setId(rs.getInt("id"));
     }
 

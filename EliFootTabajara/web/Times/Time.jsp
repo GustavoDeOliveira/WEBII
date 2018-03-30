@@ -4,6 +4,7 @@
     Author     : gustavo
 --%>
 
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page import="persistencia.TimeDAO"%>
 <%-- 
     Document   : Index
@@ -18,48 +19,37 @@
 <%@page import="persistencia.JogadorDAO"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@include file="../shared/ini.jsp" %>
-<%
-    String idGet = request.getParameter("id");
-    Time t;
-    List<Jogador> jogadores = new ArrayList<>();
-    out.println("<h2 class='panel-title text-center text-primary alert-primary'>");
-    if (idGet != null) {
-        t = new TimeDAO().carregar(Integer.parseInt(idGet));
-        out.println("Editando Time " + t.getNome() + "</h2>");
-    } else {
-        t = new Time("");
-        out.println("Criando Novo Time</h2>");
-    }
-    for (Jogador jogador : new JogadorDAO().listar()) {
-        if (jogador.getTime().getId() == t.getId()) {
-            jogadores.add(jogador);
-        }
-    }
-%>
-<form method="POST" action="./Salvar.jsp">
+<h2 class='panel-title text-center text-primary alert-primary'>
+    <c:choose>
+        <c:when test="${time.id != 0}">
+            Editando Time
+        </c:when>
+        <c:otherwise>
+            Criando Novo Time
+        </c:otherwise>
+    </c:choose>
+</h2>
+<form method="POST" action="./TimeServlet?acao=salvar">
     <div class="form-group">
         <label for="nome">Nome</label>
-        <input class="form-control" type="text" name="nome" id="nome" onblur="validar();" autofocus required
-               <% out.println(" value='" + t.getNome() + "'"); %>/>
+        <input class="form-control" type="text" name="nome" id="nome" value="${time.nome}" onblur="validar();" autofocus required/>
     </div>
-    <%
-        if (!jogadores.isEmpty()) {
-            StringBuilder sb = new StringBuilder();
-            sb.append("<div class='form-group'><label>Jogadores</label><ul>");
-            for (int i = 0; i < jogadores.size(); i++) {
-                Jogador j = jogadores.get(i);
-                sb.append("<li>");
-                sb.append("<a class='btn btn-xs btn-link' href='../Jogadores/Jogador.jsp?id=");
-                sb.append(j.getId()).append("'>");
-                sb.append(j.getNome()).append("</a>");
-                sb.append("</li>");
-            }
-            sb.append("</ul></div>");
-            out.println(sb);
-        }
-    %>
+        <c:if test="${!time.jogadores.isEmpty()}">
+            <div class="form-group">
+                <label>Jogadores</label>
+                <ul>
+                    <c:forEach items="${time.jogadores}" var="jogador">
+                        <li>
+                            <a class="btn btn-xs btn-link" href="./JogadorServlet?acao=editar&id=${jogador.id}">
+                                ${jogador.nome}
+                            </a>
+                        </li>
+                    </c:forEach>
+                </ul>
+            </div>
+        </c:if>
     <div class="form-group">
-        <input type="hidden" name="id" id="id" <%out.println(" value='" + t.getId() + "'");%>/>
+        <input type="hidden" name="id" id="id" value="${time.id}"/>
         <input id="btn_salvar" disabled type="submit" value="Salvar" class="btn btn-success btn-lg col-md-auto offset-md-10 offset-sm-8 offset-xs-6"/>
     </div>
 </form>

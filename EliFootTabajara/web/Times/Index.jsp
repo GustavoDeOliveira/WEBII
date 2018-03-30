@@ -10,15 +10,16 @@
 <%@page import="modelo.Time"%>
 <%@page import="persistencia.TimeDAO"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@include file="../shared/ini.jsp" %>
-<form method="POST" action="./Excluir.jsp">
+<form method="POST" action="./TimeServlet?acao=excluir">
     <table class="table table-hover table-primary">
         <thead>
             <tr>
                 <th colspan="2">
                     <h4 class="text-center text-default">Lista de Times</h4>
                 </th>
-                <th><a href="./Time.jsp" class="btn btn-success btn-block">Novo Time</a></th>
+                <th><a href="./TimeServlet?acao=editar" class="btn btn-success btn-block">Novo Time</a></th>
             </tr>
             <tr>
                 <th width="20">#</th>
@@ -27,46 +28,34 @@
             </tr>
         </thead>
         <tbody>
-            <%
-                List<Time> times = new TimeDAO().listar();
-//                            Time timeA = new Time("Tabajara FC");
-//                            timeA.setId(1);
-//                            Time timeB = new Time("Mergulhões FC");
-//                            timeB.setId(2);
-//                            Time timeC = new Time("Papareira FC");
-//                            timeC.setId(3);
-//                            List<Time> times = new ArrayList();
-//                            times.add(timeA);
-//                            times.add(timeB);
-//                            times.add(timeC);
-                StringBuilder sb = new StringBuilder();
-                if (times.isEmpty()) {
-                    sb.append("<tr class='warning text-muted'><td colspan='3'>Não há nenhum time cadastrado.</td></tr>");
-                } else {
-                    for (int i = 0; i < times.size(); i++) {
-                        Time t = times.get(i);
-                        sb.append("<tr>");
-                        sb.append("<td>");
-                        sb.append("<input type='checkbox' value='");
-                        sb.append(t.getId());
-                        sb.append("'name='ids' onclick='checarExcluir()' ");
-                        if (!t.getJogadores().isEmpty()) {
-                            sb.append("disabled");
-                        }
-                        sb.append("/>");
-                        sb.append("</td>");
-                        sb.append("<td>");
-                        sb.append(t.getNome());
-                        sb.append("</td>");
-                        sb.append("<td class='btn-group btn-group-xs'>");
-                        sb.append("<a class='btn btn-warning btn-flat' href='./Time.jsp?id=").append(t.getId()).append("'>Editar</a>");
-                        sb.append("</td>");
-                        sb.append("</tr>");
-                    }
-                    sb.append("<tr><td><input class='btn btn-danger btn-xs' type='submit' value='X' disabled='disabled' id='btn_exc'/></td><td colspan='3'></td></tr>");
-                }
-                out.println(sb);
-            %>
+            <c:choose>
+                <c:when test="${times.isEmpty()}">
+                    <tr class="warning">
+                        <td colspan="3">Não há nenhum time cadastrado.</td>
+                    </tr>
+                </c:when>
+                <c:otherwise>
+                    <c:forEach items="${times}" var="time">
+                        <tr>
+                            <td>
+                                <input type="checkbox" value="${time.id}" name="ids" onclick="checarExcluir()" <c:if test="${!time.jogadores.isEmpty()}">disabled</c:if>/>
+                            </td>
+                            <td>${time.nome}</td>
+                            <td>
+                                <a class="btn btn-xs btn-warning btn-flat" href="./TimeServlet?acao=editar&id=${time.id}">
+                                    Editar
+                                </a>
+                            </td>
+                        </tr>
+                    </c:forEach>
+                    <tr>
+                        <td>
+                            <input class="btn btn-xs btn-danger btn-flat" type="submit" value="X" id="btn_exc" disabled/>
+                        </td>
+                        <td colspan="2"></td>
+                    </tr>
+                </c:otherwise>
+            </c:choose>
         </tbody>
     </table>
 </form>

@@ -7,7 +7,7 @@
 <%@include file="shared/ini.jsp" %>
 
 <p>Aqui você pode ver os 
-    <a href='EliFootTabajara/Jogadores/Index.jsp'>jogadores</a>,
+    <a href='EliFootTabajara/JogadorServlet?acao=listar'>jogadores</a>,
     ou acessar os 
     <a href='EliFootTabajara/Times/Index.jsp'>times</a>.
 </p>

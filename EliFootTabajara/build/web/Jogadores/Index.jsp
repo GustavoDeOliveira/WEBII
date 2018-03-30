@@ -8,17 +8,19 @@
 <%@page import="java.lang.System"%>
 <%@page import="java.util.List"%>
 <%@page import="modelo.Jogador"%>
-<%@page import="persistencia.JogadorDAO"%>
+<%@page import="servlets.Controller"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@include file="../shared/ini.jsp" %>
-<form method="POST" action="./Excluir.jsp">
+<form method="POST" action="./JogadorServlet?acao=excluir">
     <table class="table table-primary table-hover">
         <thead>
             <tr>
                 <th colspan="3">
                     <h4 class="text-center text-default">Lista de Jogadores</h4>
                 </th>
-                <th><a href="./Jogador.jsp" class="btn btn-success btn-flat">Novo Jogador</a></th>
+                <th><a href="./JogadorServlet?acao=editar" class="btn btn-success btn-flat">Novo Jogador</a></th>
             </tr>
             <tr>
                 <th width="40">#</th>
@@ -28,36 +30,39 @@
             </tr>
         </thead>
         <tbody>
-            <%
-                JogadorDAO jdao = new JogadorDAO();
-                List<Jogador> jogadores = jdao.listar();
-                StringBuilder sb = new StringBuilder();
-                if (jogadores.isEmpty()) {
-                    sb.append("<tr class='warning'><td colspan='4'>Não há nenhum jogador cadastrado.</td></tr>");
-                } else {
-                    for (int i = 0; i < jogadores.size(); i++) {
-                        Jogador j = jogadores.get(i);
-                        sb.append("<tr>");
-                        sb.append("<td>");
-                        sb.append("<input type='checkbox' value='").append(j.getId()).append("'name='ids' onclick='checarExcluir()'/>");
-                        sb.append("</td>");
-                        sb.append("<td>");
-                        sb.append(j.getNome());
-                        sb.append("</td>");
-                        sb.append("<td>");
-                        sb.append("<a class='btn btn-xs btn-link btn-flat' href='../Times/Time.jsp?id=").append(j.getTime().getId()).append("'>");
-                        sb.append(j.getTime().getNome());
-                        sb.append("</a>");
-                        sb.append("</td>");
-                        sb.append("<td>");
-                        sb.append("<a class='btn btn-xs btn-warning btn-flat' href='./Jogador.jsp?id=").append(j.getId()).append("'>Editar</a>");
-                        sb.append("</td>");
-                        sb.append("</tr>");
-                    }
-                    sb.append("<tr><td><input class='btn btn-xs btn-danger btn-flat' type='submit' value='X' id='btn_exc' disabled/></td><td colspan='3'></td></tr>");
-                }
-                out.println(sb);
-            %>
+            <c:choose>
+                <c:when test="${jogadores.isEmpty()}">
+                    <tr class='warning'>
+                        <td colspan='4'>Não há nenhum jogador cadastrado.</td>
+                    </tr>
+                </c:when>
+                <c:otherwise>
+                    <c:forEach items="${jogadores}" var="jogador">
+                        <tr>
+                            <td>
+                                <input type="checkbox" value="${jogador.id}" name="ids" onclick="checarExcluir()"/>
+                            </td>
+                            <td>${jogador.nome}</td>
+                            <td>
+                                <a class="btn btn-xs btn-link btn-flat" href="./TimeServlet?acao=editar&id=${jogador.time.id}">
+                                    ${jogador.time.nome}
+                                </a>
+                            </td>
+                            <td>
+                                <a class="btn btn-xs btn-warning btn-flat" href="./JogadorServlet?acao=editar&id=${jogador.id}">
+                                    Editar
+                                </a>
+                            </td>
+                        </tr>
+                    </c:forEach>
+                    <tr>
+                        <td>
+                            <input class="btn btn-xs btn-danger btn-flat" type="submit" value="X" id="btn_exc" disabled/>
+                        </td>
+                        <td colspan="3"></td>
+                    </tr>
+                </c:otherwise>
+            </c:choose>
         </tbody>
     </table>
 </form>

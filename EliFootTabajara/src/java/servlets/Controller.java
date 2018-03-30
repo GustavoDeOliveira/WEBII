@@ -5,7 +5,7 @@ package servlets;
  * @author gustavo
  */
 public class Controller {
-    public String getActionLink(String acao, String controller, String parametros) {
-        return "/" + controller + "Servlet?acao=" + acao + "&" + parametros;
+    public static String getActionLink(String acao, String servlet, String parametros) {
+        return "/" + servlet + "Servlet?acao=" + acao + "&" + parametros;
     }
 }

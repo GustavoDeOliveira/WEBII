@@ -4,6 +4,8 @@
     Author     : gustavo
 --%>
 
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page import="persistencia.TimeDAO"%>
 <%-- 
     Document   : Index
@@ -18,53 +20,41 @@
 <%@page import="persistencia.JogadorDAO"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@include file="../shared/ini.jsp" %>
-<%
-    String idGet = request.getParameter("id");
-    Jogador j;
-    List<Time> times = new TimeDAO().listar();
-
-    out.println("<h2 class='panel-title text-center text-primary alert-primary'>");
-    if (idGet != null) {
-        j = new JogadorDAO().carregar(Integer.parseInt(idGet));
-        out.println("Editando Jogador " + j.getNome() + "</h2>");
-    } else {
-        j = new Jogador("", new Time(""));
-        out.println("Criando Novo Jogador");
-    }
-    out.println("</h2>");
-
-%>
-<form method="POST" action="./Salvar.jsp">
+<h2 class='panel-title text-center text-primary alert-primary'>
+    <c:choose>
+        <c:when test="${jogador.id != 0}">
+            Editando Jogador
+        </c:when>
+        <c:otherwise>
+            Criando Novo Jogador
+        </c:otherwise>
+    </c:choose>
+</h2>
+<form method="POST" action="./JogadorServlet?acao=salvar&id=${jogador.id}">
     <div class="form-group">
         <label for="nome">Nome</label>
-        <input class="form-control" type="text" name="nome" id="nome" onblur="validar();" autofocus required 
-               <% out.println(" value='" + j.getNome() + "'"); %>/>
+        <input class="form-control" type="text" name="nome" id="nome" value="${jogador.nome}" onblur="validar();" autofocus required/>
     </div>
     <div class="form-group">
         <label for="time_id">Time</label>
         <select class="form-control" name="time_id" id="time_id" required onchange="validar();">
-            <%
-                StringBuilder sb = new StringBuilder();
-                if (times.isEmpty()) {
-                    sb.append("<option id='invalid_option' class='alert-warning' value='0' selected>Não há nenhum time disponível.</option>");
-                } else {
-                    sb.append("<option id='invalid_option' value='0' selected>Selecione um time</option>");
-                    for (int i = 0; i < times.size(); i++) {
-                        Time t = times.get(i);
-                        sb.append("<option value='").append(t.getId());
-                        if (j.getTime().getId() == t.getId()) {
-                            sb.append("' selected='selected");
-                        }
-                        sb.append("'>");
-                        sb.append(t.getNome()).append("</option>");
-                    }
-                }
-                out.println(sb);
-            %>
+            <c:choose>
+                <c:when test="${times.isEmpty()}">
+                    <option id='invalid_option' class='alert-warning' value='0' selected>Não há nenhum time disponível.</option>
+                </c:when>
+                <c:otherwise>
+                    <option id='invalid_option' value='0' selected>Selecione um time</option>
+                    <c:forEach items="${times}" var="time">
+                        <option value="${time.id}" <c:if test="${time.id == jogador.time.id}">selected</c:if>>
+                            ${time.nome}
+                        </option>
+                    </c:forEach>
+                </c:otherwise>
+            </c:choose>
         </select>
     </div>
     <div class="form-group">
-        <input type="hidden" name="id" id="id" <% out.println("value='" + j.getId() + "'");%>/>
+        <input type="hidden" name="id" id="id" ${jogador.id}/>
         <input id="btn_salvar" disabled class="btn btn-success btn-lg col-md-auto offset-md-10 offset-sm-8 offset-xs-6" type="submit" value="Salvar"/>
     </div>
 </form>

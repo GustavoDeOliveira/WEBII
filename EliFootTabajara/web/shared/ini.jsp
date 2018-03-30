@@ -40,10 +40,10 @@
                             </div>
                             <ul class="nav navbar-nav nav-pills">
                                 <li>
-                                    <a href="/EliFootTabajara/Jogadores/Index.jsp">Jogadores</a>
+                                    <a href="/EliFootTabajara/JogadorServlet?acao=listar">Jogadores</a>
                                 </li>
                                 <li>
-                                    <a href="/EliFootTabajara/Times/Index.jsp">Times</a>
+                                    <a href="/EliFootTabajara/TimeServlet?acao=listar">Times</a>
                                 </li>
                             </ul>
                         </div>

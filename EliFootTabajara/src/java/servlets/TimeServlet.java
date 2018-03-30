@@ -7,6 +7,7 @@ package servlets;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -23,8 +24,8 @@ import persistencia.TimeService;
  *
  * @author gustavo
  */
-@WebServlet(name = "JogadorServlet", urlPatterns = {"/JogadorServlet"})
-public class JogadorServlet extends HttpServlet {
+@WebServlet(name = "TimeServlet", urlPatterns = {"/TimeServlet"})
+public class TimeServlet extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -97,35 +98,31 @@ public class JogadorServlet extends HttpServlet {
     }// </editor-fold>
 
     private void listar(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        request.setAttribute("jogadores", new JogadorService().listar());
-        RequestDispatcher rd = request.getRequestDispatcher("/Jogadores/Index.jsp");
+        request.setAttribute("times", new TimeService().listar());
+        RequestDispatcher rd = request.getRequestDispatcher("/Times/Index.jsp");
         rd.forward(request, response);
     }
 
     private void editar(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         int id = request.getParameter("id") != null ? Integer.parseInt(request.getParameter("id")) : 0;
-        Jogador jogador = new JogadorService().carregar(id);
-        List<Time> times = new TimeService().listar();
-        request.setAttribute("jogador", jogador);
-        request.setAttribute("times", times);
-        RequestDispatcher rd = request.getRequestDispatcher("/Jogadores/Jogador.jsp");
+        Time time = new TimeService().carregar(id);
+        request.setAttribute("time", time);
+//        new JogadorService().listar().stream()
+//                .filter((j) -> (j.getTime().getId() == time.getId()))
+//                .forEachOrdered((j) -> {
+//                    time.getJogadores().add(j);
+//        });
+        RequestDispatcher rd = request.getRequestDispatcher("/Times/Time.jsp");
         rd.forward(request, response);
     }
     
     private void salvar(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String nome = request.getParameter("nome");
-        int timeId = request.getParameter("time_id") != null 
-                ? Integer.parseInt(request.getParameter("time_id")) 
-                : 0;
-        if (timeId == 0) throw new ServletException("Deu pau no dropdown");
-        Time time = new TimeService().carregar(timeId);
-        int id = request.getParameter("id") != null 
-                ? Integer.parseInt(request.getParameter("id")) 
-                : 0;
-        Jogador j = new Jogador(nome, time);
-        j.setId(id);
-        new JogadorService().salvar(j);
-        RequestDispatcher rd = request.getRequestDispatcher("./JogadorServlet?acao=listar");
+        int id = request.getParameter("id") != null ? Integer.parseInt(request.getParameter("id")) : 0;
+        Time t = new Time(nome);
+        t.setId(id);
+        new TimeService().salvar(t);
+        RequestDispatcher rd = request.getRequestDispatcher("./TimeServlet?acao=listar");
         rd.forward(request, response);
     }
     
@@ -135,9 +132,9 @@ public class JogadorServlet extends HttpServlet {
         for (int i = 0; i < ids.length; i++) {
             ids[i] = Integer.parseInt(idsReq[i]);
         }
-        new JogadorService().excluir(ids);
-        RequestDispatcher rd = request.getRequestDispatcher("./JogadorServlet?acao=listar");
+        new TimeService().excluir(ids);
+        RequestDispatcher rd = request.getRequestDispatcher("./TimeServlet?acao=listar");
         rd.forward(request, response);
     }
-    
+
 }
