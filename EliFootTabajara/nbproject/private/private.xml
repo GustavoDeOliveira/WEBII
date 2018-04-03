@@ -11,6 +11,19 @@
         </file>
     </editor-bookmarks>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
-        <group/>
+        <group>
+            <file>file:/C:/Users/gugu_/Dropbox/github/WEBII/EliFootTabajara/src/java/servlets/TimeServlet.java</file>
+            <file>file:/C:/Users/gugu_/Dropbox/github/WEBII/EliFootTabajara/src/java/persistencia/TecnicoDAO.java</file>
+            <file>file:/C:/Users/gugu_/Dropbox/github/WEBII/EliFootTabajara/web/Jogadores/Jogador.jsp</file>
+            <file>file:/C:/Users/gugu_/Dropbox/github/WEBII/EliFootTabajara/src/java/modelo/Pessoa.java</file>
+            <file>file:/C:/Users/gugu_/Dropbox/github/WEBII/EliFootTabajara/src/java/modelo/Entidade.java</file>
+            <file>file:/C:/Users/gugu_/Dropbox/github/WEBII/EliFootTabajara/web/Jogadores/Index.jsp</file>
+            <file>file:/C:/Users/gugu_/Dropbox/github/WEBII/EliFootTabajara/src/java/modelo/Time.java</file>
+            <file>file:/C:/Users/gugu_/Dropbox/github/WEBII/EliFootTabajara/src/java/persistencia/JogadorDAO.java</file>
+            <file>file:/C:/Users/gugu_/Dropbox/github/WEBII/EliFootTabajara/src/java/servlets/JogadorServlet.java</file>
+            <file>file:/C:/Users/gugu_/Dropbox/github/WEBII/EliFootTabajara/src/java/persistencia/TimeDAO.java</file>
+            <file>file:/C:/Users/gugu_/Dropbox/github/WEBII/EliFootTabajara/src/java/modelo/Tecnico.java</file>
+            <file>file:/C:/Users/gugu_/Dropbox/github/WEBII/EliFootTabajara/src/java/modelo/Jogador.java</file>
+        </group>
     </open-files>
 </project-private>

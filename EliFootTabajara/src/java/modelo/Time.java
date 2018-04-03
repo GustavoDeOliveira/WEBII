@@ -7,17 +7,29 @@ package modelo;
 
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.*;
 
 /**
  *
  * @author gustavo
  */
+@Entity
 public class Time extends Entidade {
 
+    @OneToMany(mappedBy = "time", orphanRemoval = true, cascade = {CascadeType.REMOVE, CascadeType.PERSIST})
     private List<Jogador> jogadores;
+    
+    @OneToOne(optional = false, cascade = {CascadeType.PERSIST})
+    private Tecnico tecnico;
+    
+    @Column(unique = true)
+    private String nome;
+
+    public Time() {
+    }
 
     public Time(String nome) {
-        super(nome);
+        this.nome = nome;
         this.jogadores = new ArrayList<>();
     }
     
@@ -53,6 +65,22 @@ public class Time extends Entidade {
     
     public void setJogadores(List<Jogador> jogadores) {
         this.jogadores = jogadores;
+    }
+
+    public Tecnico getTecnico() {
+        return tecnico;
+    }
+
+    public void setTecnico(Tecnico tecnico) {
+        this.tecnico = tecnico;
+    }
+
+    public String getNome() {
+        return nome;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
     }
         
 }

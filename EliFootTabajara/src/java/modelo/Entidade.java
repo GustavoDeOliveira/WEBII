@@ -1,34 +1,29 @@
 package modelo;
 
-import java.util.List;
+import java.io.Serializable;
+import javax.persistence.*;
 
-public abstract class Entidade {
+@Entity
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+public abstract class Entidade implements Serializable {
     
-    private int id;
-    private String nome;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
 
-    public Entidade(String nome) {
-        this.nome = nome;
+    public Entidade() {
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
-    }
-
-    public String getNome() {
-        return nome;
-    }
-
-    public void setNome(String nome) {
-        this.nome = nome;
     }
     
     public boolean persistente() {
-        return this.id != 0;
+        return this.id != null;
     }
     
 }

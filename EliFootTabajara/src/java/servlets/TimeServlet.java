@@ -9,6 +9,9 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.EntityManager;
+import javax.persistence.Persistence;
+import javax.persistence.Query;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -17,8 +20,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import modelo.Jogador;
 import modelo.Time;
-import persistencia.JogadorService;
-import persistencia.TimeService;
+import persistencia.JogadorDAO;
+import persistencia.TimeDAO;
 
 /**
  *
@@ -27,6 +30,10 @@ import persistencia.TimeService;
 @WebServlet(name = "TimeServlet", urlPatterns = {"/TimeServlet"})
 public class TimeServlet extends HttpServlet {
 
+    private static final TimeDAO TDAO = new TimeDAO(Persistence.createEntityManagerFactory("EliFootTabajaraPU"));
+    private static final JogadorDAO JDAO = new JogadorDAO(Persistence.createEntityManagerFactory("EliFootTabajaraPU"));
+
+    
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -98,14 +105,14 @@ public class TimeServlet extends HttpServlet {
     }// </editor-fold>
 
     private void listar(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        request.setAttribute("times", new TimeService().listar());
+        request.setAttribute("times", TDAO.findTimeEntities());
         RequestDispatcher rd = request.getRequestDispatcher("/Times/Index.jsp");
         rd.forward(request, response);
     }
 
     private void editar(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         int id = request.getParameter("id") != null ? Integer.parseInt(request.getParameter("id")) : 0;
-        Time time = new TimeService().carregar(id);
+        Time time = TDAO.findTime(id);
         request.setAttribute("time", time);
 //        new JogadorService().listar().stream()
 //                .filter((j) -> (j.getTime().getId() == time.getId()))
@@ -118,10 +125,18 @@ public class TimeServlet extends HttpServlet {
     
     private void salvar(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String nome = request.getParameter("nome");
-        int id = request.getParameter("id") != null ? Integer.parseInt(request.getParameter("id")) : 0;
+        String idGet = request.getParameter("id");
+        Integer id = idGet == null || idGet.equals("") ? 0 : Integer.parseInt(request.getParameter("id"));
         Time t = new Time(nome);
         t.setId(id);
-        new TimeService().salvar(t);
+        if (t.getId() == 0)
+            TDAO.create(t);
+        else
+            try {
+                TDAO.edit(t);
+            } catch (Exception e) {
+                log("Erro editando time.", e);
+            }
         RequestDispatcher rd = request.getRequestDispatcher("./TimeServlet?acao=listar");
         rd.forward(request, response);
     }
@@ -129,12 +144,35 @@ public class TimeServlet extends HttpServlet {
     private void excluir(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String[] idsReq = request.getParameterValues("ids");
         int[] ids = new int[idsReq.length];
+        StringBuilder sb = new StringBuilder("DELETE FROM Time t WHERE t.id IN (");
         for (int i = 0; i < ids.length; i++) {
             ids[i] = Integer.parseInt(idsReq[i]);
+            sb.append(":id").append(i);
+            if (i + 1 < ids.length) {
+                sb.append(", ");
+            } else {
+                sb.append(")");
+            }
         }
-        new TimeService().excluir(ids);
-        RequestDispatcher rd = request.getRequestDispatcher("./TimeServlet?acao=listar");
-        rd.forward(request, response);
+        EntityManager em = TDAO.getEntityManager();
+        try {
+            em.getTransaction().begin();
+            Query query = em.createQuery(sb.toString());
+            for (int i = 0; i < ids.length; i++) {
+                query.setParameter("id" + i, ids[i]);
+            }
+            query.executeUpdate();
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            log("Erro excluindo times.", e);
+        } finally {
+            if (em != null) {
+                em.close();
+            }
+            RequestDispatcher rd = request.getRequestDispatcher("./TimeServlet?acao=listar");
+            rd.forward(request, response);
+        }
+        
     }
 
 }
