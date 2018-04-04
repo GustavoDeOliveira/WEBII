@@ -3,11 +3,10 @@
     Created on : 02/03/2018, 19:34:57
     Author     : gustavo
 --%>
-<%@page import="modelo.Time"%>
 <%@page import="java.util.ArrayList"%>
 <%@page import="java.lang.System"%>
 <%@page import="java.util.List"%>
-<%@page import="modelo.Time"%>
+<%@page import="modelo.Equipe"%>
 <%@page import="persistencia.TimeDAO"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>

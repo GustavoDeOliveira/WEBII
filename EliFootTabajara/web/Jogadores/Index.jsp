@@ -3,7 +3,7 @@
     Created on : 02/03/2018, 19:34:57
     Author     : gustavo
 --%>
-<%@page import="modelo.Time"%>
+<%@page import="modelo.Equipe"%>
 <%@page import="java.util.ArrayList"%>
 <%@page import="java.lang.System"%>
 <%@page import="java.util.List"%>
@@ -43,8 +43,8 @@
                             </td>
                             <td>${jogador.nome}</td>
                             <td>
-                                <a class="btn btn-xs btn-link btn-flat" href="./TimeServlet?acao=editar&id=${jogador.time.id}">
-                                    ${jogador.time.nome}
+                                <a class="btn btn-xs btn-link btn-flat" href="./TimeServlet?acao=editar&id=${jogador.equipe.id}">
+                                    ${jogador.equipe.nome}
                                 </a>
                             </td>
                             <td>

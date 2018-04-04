@@ -11,17 +11,17 @@
     Created on : 02/03/2018, 19:34:57
     Author     : gustavo
 --%>
-<%@page import="modelo.Time"%>
 <%@page import="java.util.ArrayList"%>
 <%@page import="java.lang.System"%>
 <%@page import="java.util.List"%>
+<%@page import="modelo.Equipe"%>
 <%@page import="modelo.Jogador"%>
 <%@page import="persistencia.JogadorDAO"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@include file="../shared/ini.jsp" %>
 <h2 class='panel-title text-center text-primary alert-primary'>
     <c:choose>
-        <c:when test="${time.id != 0}">
+        <c:when test="${time != null && time.id != 0}">
             Editando Time
         </c:when>
         <c:otherwise>
@@ -32,9 +32,18 @@
 <form method="POST" action="./TimeServlet?acao=salvar">
     <div class="form-group">
         <label for="nome">Nome</label>
-        <input class="form-control" type="text" name="nome" id="nome" value="${time.nome}" onblur="validar();" autofocus required/>
+        <input class="form-control" type="text" name="nome" id="cmp-nome" value="${time.nome}" autofocus required/>
     </div>
-        <c:if test="${!time.jogadores.isEmpty()}">
+    <div class="form-group">
+        <label for="tecnico_id">Tecnico</label>
+        <select class="form-control" type="text" name="tecnico_id" id="drop-tecnico">
+            <option value="" <c:if test="${time.tecnico == null}">selected</c:if>>Nenhum</option>
+            <c:forEach items="${tecnicos}" var="tecnico">
+                <option value="${tecnico.id}" <c:if test="${tecnico.id == time.tecnico.id}">selected</c:if>>${tecnico.nome}</option>
+            </c:forEach>
+        </select>
+    </div>
+        <c:if test="${time != null && !time.jogadores.isEmpty()}">
             <div class="form-group">
                 <label>Jogadores</label>
                 <ul>
@@ -50,18 +59,7 @@
         </c:if>
     <div class="form-group">
         <input type="hidden" name="id" id="id" value="${time.id}"/>
-        <input id="btn_salvar" disabled type="submit" value="Salvar" class="btn btn-success btn-lg col-md-auto offset-md-10 offset-sm-8 offset-xs-6"/>
+        <input id="btn-salvar" type="submit" value="Salvar" class="btn btn-success btn-lg col-md-auto offset-md-10 offset-sm-8 offset-xs-6"/>
     </div>
 </form>
-<script type="text/javascript">
-    function validar() {
-        var salvar = document.getElementById("btn_salvar");
-        var nome = document.getElementById("nome");
-        if (nome.value === undefined || nome.value === "" || nome.value === null) {
-            salvar.disabled = "disabled";
-            return;
-        }
-        salvar.disabled = undefined;
-    }
-</script>
 <%@include file="../shared/fim.jsp" %>

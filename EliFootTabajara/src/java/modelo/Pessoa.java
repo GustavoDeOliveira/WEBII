@@ -14,7 +14,7 @@ import javax.persistence.*;
 @Entity
 public abstract class Pessoa extends Entidade {
     
-    @Column
+    @Column(nullable = false)
     private String nome;
 
     public Pessoa() {

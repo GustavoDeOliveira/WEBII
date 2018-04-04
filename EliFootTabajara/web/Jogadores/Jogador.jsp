@@ -12,7 +12,7 @@
     Created on : 02/03/2018, 19:34:57
     Author     : gustavo
 --%>
-<%@page import="modelo.Time"%>
+<%@page import="modelo.Equipe"%>
 <%@page import="java.util.ArrayList"%>
 <%@page import="java.lang.System"%>
 <%@page import="java.util.List"%>
@@ -22,7 +22,7 @@
 <%@include file="../shared/ini.jsp" %>
 <h2 class='panel-title text-center text-primary alert-primary'>
     <c:choose>
-        <c:when test="${jogador.id != 0}">
+        <c:when test="${jogador != null && jogador.id != null}">
             Editando Jogador
         </c:when>
         <c:otherwise>
@@ -45,7 +45,7 @@
                 <c:otherwise>
                     <option id='invalid_option' value='0' selected>Selecione um time</option>
                     <c:forEach items="${times}" var="time">
-                        <option value="${time.id}" <c:if test="${time.id == jogador.time.id}">selected</c:if>>
+                        <option value="${time.id}" <c:if test="${time.id == jogador.equipe.id}">selected</c:if>>
                             ${time.nome}
                         </option>
                     </c:forEach>

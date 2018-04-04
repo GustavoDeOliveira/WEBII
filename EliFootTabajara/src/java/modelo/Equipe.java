@@ -14,31 +14,33 @@ import javax.persistence.*;
  * @author gustavo
  */
 @Entity
-public class Time extends Entidade {
+@Table(name = "equipe")
+public class Equipe extends Entidade {
 
-    @OneToMany(mappedBy = "time", orphanRemoval = true, cascade = {CascadeType.REMOVE, CascadeType.PERSIST})
+    @OneToMany(mappedBy = "equipe", orphanRemoval = true, cascade = {CascadeType.REMOVE, CascadeType.PERSIST})
     private List<Jogador> jogadores;
     
-    @OneToOne(optional = false, cascade = {CascadeType.PERSIST})
+    @OneToOne(cascade = {CascadeType.PERSIST})
     private Tecnico tecnico;
     
     @Column(unique = true)
     private String nome;
 
-    public Time() {
+    public Equipe() {
     }
 
-    public Time(String nome) {
+    @Deprecated
+    public Equipe(String nome) {
         this.nome = nome;
         this.jogadores = new ArrayList<>();
     }
     
-    
+    @Deprecated
     public void addJogador(Jogador j){
         jogadores.add(j);
     }
     
-    
+    @Deprecated
     public void setJogador(int i, Jogador j) {
         try {
             this.jogadores.set(i, j);
@@ -47,7 +49,7 @@ public class Time extends Entidade {
         }
     }
     
-    
+    @Deprecated
     public Jogador getJogador(int i, Jogador j) {
         try {
             return this.jogadores.get(i);

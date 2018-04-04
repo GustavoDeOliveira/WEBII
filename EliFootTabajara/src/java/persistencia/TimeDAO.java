@@ -13,7 +13,7 @@ import javax.persistence.Query;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
-import modelo.Time;
+import modelo.Equipe;
 import persistencia.exceptions.NonexistentEntityException;
 
 /**
@@ -31,7 +31,7 @@ public class TimeDAO implements Serializable {
         return emf.createEntityManager();
     }
 
-    public void create(Time time) {
+    public void create(Equipe time) {
         EntityManager em = null;
         try {
             em = getEntityManager();
@@ -45,7 +45,7 @@ public class TimeDAO implements Serializable {
         }
     }
 
-    public void edit(Time time) throws NonexistentEntityException, Exception {
+    public void edit(Equipe time) throws NonexistentEntityException, Exception {
         EntityManager em = null;
         try {
             em = getEntityManager();
@@ -56,7 +56,7 @@ public class TimeDAO implements Serializable {
             String msg = ex.getLocalizedMessage();
             if (msg == null || msg.length() == 0) {
                 Integer id = time.getId();
-                if (findTime(id) == null) {
+                if (findEquipe(id) == null) {
                     throw new NonexistentEntityException("The time with id " + id + " no longer exists.");
                 }
             }
@@ -73,9 +73,9 @@ public class TimeDAO implements Serializable {
         try {
             em = getEntityManager();
             em.getTransaction().begin();
-            Time time;
+            Equipe time;
             try {
-                time = em.getReference(Time.class, id);
+                time = em.getReference(Equipe.class, id);
                 time.getId();
             } catch (EntityNotFoundException enfe) {
                 throw new NonexistentEntityException("The time with id " + id + " no longer exists.", enfe);
@@ -89,19 +89,19 @@ public class TimeDAO implements Serializable {
         }
     }
 
-    public List<Time> findTimeEntities() {
+    public List<Equipe> findTimeEntities() {
         return findTimeEntities(true, -1, -1);
     }
 
-    public List<Time> findTimeEntities(int maxResults, int firstResult) {
+    public List<Equipe> findTimeEntities(int maxResults, int firstResult) {
         return findTimeEntities(false, maxResults, firstResult);
     }
 
-    private List<Time> findTimeEntities(boolean all, int maxResults, int firstResult) {
+    private List<Equipe> findTimeEntities(boolean all, int maxResults, int firstResult) {
         EntityManager em = getEntityManager();
         try {
             CriteriaQuery cq = em.getCriteriaBuilder().createQuery();
-            cq.select(cq.from(Time.class));
+            cq.select(cq.from(Equipe.class));
             Query q = em.createQuery(cq);
             if (!all) {
                 q.setMaxResults(maxResults);
@@ -113,10 +113,10 @@ public class TimeDAO implements Serializable {
         }
     }
 
-    public Time findTime(Integer id) {
+    public Equipe findEquipe(Integer id) {
         EntityManager em = getEntityManager();
         try {
-            return em.find(Time.class, id);
+            return em.find(Equipe.class, id);
         } finally {
             em.close();
         }
@@ -126,7 +126,7 @@ public class TimeDAO implements Serializable {
         EntityManager em = getEntityManager();
         try {
             CriteriaQuery cq = em.getCriteriaBuilder().createQuery();
-            Root<Time> rt = cq.from(Time.class);
+            Root<Equipe> rt = cq.from(Equipe.class);
             cq.select(em.getCriteriaBuilder().count(rt));
             Query q = em.createQuery(cq);
             return ((Long) q.getSingleResult()).intValue();

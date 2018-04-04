@@ -12,34 +12,44 @@ import javax.persistence.*;
  * @author gustavo
  */
 @Entity
-@NamedQuery(name = "findJogadoresWithIds", query = "SELECT j FROM Jogador j WHERE j.id IN (:ids)")
+@Table(name = "jogador")
+@NamedQuery(name = "findJogadoresByPosicao", query = "SELECT j FROM Jogador j WHERE j.posicao = :posicao")
 public class Jogador extends Pessoa {
 
-    @JoinColumn(name="time_id", referencedColumnName = "id")
     @ManyToOne(optional = false, cascade = CascadeType.REMOVE)
-    private Time time;
+    @JoinColumn(name="equipe_id", referencedColumnName = "id")
+    private Equipe equipe;
+    
+    @OneToOne(optional = false)
+    Posicao posicao;
+
+    public Posicao getPosicao() {
+        return posicao;
+    }
+
+    public void setPosicao(Posicao posicao) {
+        this.posicao = posicao;
+    }
 
     public Jogador() {
     }
 
-    public Jogador(String nome, Time time) {
+    @Deprecated
+    public Jogador(String nome, Equipe time) {
         super(nome);
-        if(time == null)
-            throw new IllegalArgumentException("O jogador deve ter um time.");
-        
-        this.time = time;
+        this.equipe = time;
     }
 
 
-    public Time getTime() {
-        return time;
+    public Equipe getEquipe() {
+        return equipe;
     }
 
     
-    public void setTime(Time time) {
+    public void setEquipe(Equipe time) {
         if(time == null)
             throw new IllegalArgumentException("O jogador deve ter um time.");
         
-        this.time = time;
+        this.equipe = time;
     }
 }

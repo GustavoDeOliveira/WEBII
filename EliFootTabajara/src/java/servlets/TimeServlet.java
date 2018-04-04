@@ -19,8 +19,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import modelo.Jogador;
-import modelo.Time;
+import modelo.Equipe;
+import modelo.Tecnico;
 import persistencia.JogadorDAO;
+import persistencia.TecnicoDAO;
 import persistencia.TimeDAO;
 
 /**
@@ -30,8 +32,9 @@ import persistencia.TimeDAO;
 @WebServlet(name = "TimeServlet", urlPatterns = {"/TimeServlet"})
 public class TimeServlet extends HttpServlet {
 
-    private static final TimeDAO TDAO = new TimeDAO(Persistence.createEntityManagerFactory("EliFootTabajaraPU"));
+    private static final TimeDAO EDAO = new TimeDAO(Persistence.createEntityManagerFactory("EliFootTabajaraPU"));
     private static final JogadorDAO JDAO = new JogadorDAO(Persistence.createEntityManagerFactory("EliFootTabajaraPU"));
+    private static final TecnicoDAO TDAO = new TecnicoDAO(Persistence.createEntityManagerFactory("EliFootTabajaraPU"));
 
     
     /**
@@ -105,38 +108,40 @@ public class TimeServlet extends HttpServlet {
     }// </editor-fold>
 
     private void listar(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        request.setAttribute("times", TDAO.findTimeEntities());
+        request.setAttribute("times", EDAO.findTimeEntities());
         RequestDispatcher rd = request.getRequestDispatcher("/Times/Index.jsp");
         rd.forward(request, response);
     }
 
     private void editar(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         int id = request.getParameter("id") != null ? Integer.parseInt(request.getParameter("id")) : 0;
-        Time time = TDAO.findTime(id);
+        Equipe time = EDAO.findEquipe(id);
         request.setAttribute("time", time);
-//        new JogadorService().listar().stream()
-//                .filter((j) -> (j.getTime().getId() == time.getId()))
-//                .forEachOrdered((j) -> {
-//                    time.getJogadores().add(j);
-//        });
+        request.setAttribute("tecnicos", TDAO.findTecnicoEntities());
         RequestDispatcher rd = request.getRequestDispatcher("/Times/Time.jsp");
         rd.forward(request, response);
     }
     
     private void salvar(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String nome = request.getParameter("nome");
         String idGet = request.getParameter("id");
-        Integer id = idGet == null || idGet.equals("") ? 0 : Integer.parseInt(request.getParameter("id"));
-        Time t = new Time(nome);
-        t.setId(id);
-        if (t.getId() == 0)
-            TDAO.create(t);
-        else
-            try {
-                TDAO.edit(t);
-            } catch (Exception e) {
-                log("Erro editando time.", e);
+        String nome = request.getParameter("nome");
+        String tecnicoIdGet = request.getParameter("tecnico_id");
+        Equipe t = new Equipe();
+        t.setNome(nome);
+        if (tecnicoIdGet != null && !tecnicoIdGet.equals("")) {
+            t.setTecnico(TDAO.findTecnico(Integer.parseInt(tecnicoIdGet)));
+        }
+        try {
+            if (idGet == null || idGet.equals("")) {
+                EDAO.create(t);
+            } else {
+                Integer id = Integer.parseInt(request.getParameter("id"));
+                t.setId(id);
+                EDAO.edit(t);
             }
+        } catch (Exception e) {
+            log("Erro editando time.", e);
+        }
         RequestDispatcher rd = request.getRequestDispatcher("./TimeServlet?acao=listar");
         rd.forward(request, response);
     }
@@ -148,13 +153,9 @@ public class TimeServlet extends HttpServlet {
         for (int i = 0; i < ids.length; i++) {
             ids[i] = Integer.parseInt(idsReq[i]);
             sb.append(":id").append(i);
-            if (i + 1 < ids.length) {
-                sb.append(", ");
-            } else {
-                sb.append(")");
-            }
+            sb.append(i + 1 < ids.length ? ", " : ")");
         }
-        EntityManager em = TDAO.getEntityManager();
+        EntityManager em = EDAO.getEntityManager();
         try {
             em.getTransaction().begin();
             Query query = em.createQuery(sb.toString());

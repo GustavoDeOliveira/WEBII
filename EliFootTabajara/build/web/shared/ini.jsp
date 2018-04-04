@@ -18,22 +18,18 @@
         <meta name="author" content="LayoutIt!">
 
         <link href="/EliFootTabajara/css/bootstrap.min.css" rel="stylesheet">
-        <link href="/EliFootTabajara/css/style.css" rel="stylesheet">
+        <link href="/EliFootTabajara/css/bootstrap-themes.min.css" rel="stylesheet">
         <link href="/EliFootTabajara/css/themes.min.css" rel="stylesheet">
+        <link href="/EliFootTabajara/css/style.css" rel="stylesheet">
         
-        <style type="text/css">
-            .background{
-                background-color: #333333;
-            }
-        </style>
 
     </head>
-    <body class="theme-dust background">
+    <body class="background">
 
         <div class="container-fluid">
             <div class="row">
-                <div class="col-md-8 col-md-offset-2 col-sm-10 col-sm-offset-1">
-                    <nav class="navbar navbar-inverse" role="navigation">
+                <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+                    <div class="col-md-8 col-md-offset-2 col-sm-10 col-sm-offset-1">
                         <div class="navbar-inner">
                             <div class="navbar-header">
                                 <a class="navbar-brand" href="/EliFootTabajara/Index.jsp">EliFoot</a>
@@ -45,18 +41,19 @@
                                 <li>
                                     <a href="/EliFootTabajara/TimeServlet?acao=listar">Times</a>
                                 </li>
+                                <li>
+                                    <a href="/EliFootTabajara/TecnicoServlet?acao=listar">Técnicos</a>
+                                </li>
                             </ul>
                         </div>
-                    </nav>
-                </div>
+                    </div>
+                </nav>
             </div>
-            <div class="row">
+            <div class="row corpo">
                 <div class="col-md-8 col-md-offset-2 col-sm-10 col-sm-offset-1">
-                    <div class="panel panel-default">
+                    <div class="panel panel-dark">
                         <div class="panel-heading">
                             <h3 class="panel-title">
-                            </h3>
-                            <h3 class="text-center text-default">
                                 Painel de Administrador do EliFoot Tabajara
                             </h3>
                         </div>

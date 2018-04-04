@@ -15,7 +15,7 @@ import javax.persistence.EntityNotFoundException;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import modelo.Jogador;
-import modelo.Time;
+import modelo.Equipe;
 import persistencia.exceptions.NonexistentEntityException;
 
 /**
@@ -38,10 +38,10 @@ public class JogadorDAO implements Serializable {
         try {
             em = getEntityManager();
             em.getTransaction().begin();
-            Time time = jogador.getTime();
+            Equipe time = jogador.getEquipe();
             if (time != null) {
                 time = em.getReference(time.getClass(), time.getId());
-                jogador.setTime(time);
+                jogador.setEquipe(time);
             }
             em.persist(jogador);
             if (time != null) {
@@ -62,11 +62,11 @@ public class JogadorDAO implements Serializable {
             em = getEntityManager();
             em.getTransaction().begin();
             Jogador persistentJogador = em.find(Jogador.class, jogador.getId());
-            Time timeOld = persistentJogador.getTime();
-            Time timeNew = jogador.getTime();
+            Equipe timeOld = persistentJogador.getEquipe();
+            Equipe timeNew = jogador.getEquipe();
             if (timeNew != null) {
                 timeNew = em.getReference(timeNew.getClass(), timeNew.getId());
-                jogador.setTime(timeNew);
+                jogador.setEquipe(timeNew);
             }
             jogador = em.merge(jogador);
             if (timeOld != null && !timeOld.equals(timeNew)) {
@@ -106,7 +106,7 @@ public class JogadorDAO implements Serializable {
             } catch (EntityNotFoundException enfe) {
                 throw new NonexistentEntityException("The jogador with id " + id + " no longer exists.", enfe);
             }
-            Time time = jogador.getTime();
+            Equipe time = jogador.getEquipe();
             if (time != null) {
                 time.getJogadores().remove(jogador);
                 time = em.merge(time);
@@ -136,10 +136,10 @@ public class JogadorDAO implements Serializable {
             } catch (EntityNotFoundException enfe) {
                 throw new NonexistentEntityException("The jogador with id " + ids + " no longer exists.", enfe);
             }
-            final List<Time> times = new ArrayList();
+            final List<Equipe> times = new ArrayList();
             final EntityManager enMa = em;
             jogadores.forEach((jogador) -> {
-                Time time = jogador.getTime();
+                Equipe time = jogador.getEquipe();
                 if (time != null) {
                     time.getJogadores().remove(jogador);
                     enMa.merge(times);

@@ -22,8 +22,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import modelo.Jogador;
 import modelo.Equipe;
+import modelo.Tecnico;
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider;
 import persistencia.JogadorDAO;
+import persistencia.TecnicoDAO;
 import persistencia.TimeDAO;
 import persistencia.exceptions.NonexistentEntityException;
 
@@ -31,11 +33,11 @@ import persistencia.exceptions.NonexistentEntityException;
  *
  * @author gustavo
  */
-@WebServlet(name = "JogadorServlet", urlPatterns = {"/JogadorServlet"})
-public class JogadorServlet extends HttpServlet {
+@WebServlet(name = "TecnicoServlet", urlPatterns = {"/TecnicoServlet"})
+public class TecnicoServlet extends HttpServlet {
 
-    private static final JogadorDAO JDAO = new JogadorDAO(Persistence.createEntityManagerFactory("EliFootTabajaraPU"));
-    private static final TimeDAO TDAO = new TimeDAO(Persistence.createEntityManagerFactory("EliFootTabajaraPU"));
+    private static final TecnicoDAO TDAO = new TecnicoDAO(Persistence.createEntityManagerFactory("EliFootTabajaraPU"));
+    private static final TimeDAO EDAO = new TimeDAO(Persistence.createEntityManagerFactory("EliFootTabajaraPU"));
     
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -108,54 +110,44 @@ public class JogadorServlet extends HttpServlet {
     }// </editor-fold>
 
     private void listar(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        request.setAttribute("jogadores", JDAO.findJogadorEntities());
-        RequestDispatcher rd = request.getRequestDispatcher("/Jogadores/Index.jsp");
+        request.setAttribute("tecnicos", TDAO.findTecnicoEntities());
+        RequestDispatcher rd = request.getRequestDispatcher("/Tecnicos/Index.jsp");
         rd.forward(request, response);
     }
 
     private void editar(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String idGet = request.getParameter("id");
         int id = idGet == null || idGet.equals("") ? 0 : Integer.parseInt(request.getParameter("id"));
-        Jogador jogador = JDAO.findJogador(id);
-        List<Equipe> times = TDAO.findTimeEntities();
-        request.setAttribute("jogador", jogador);
-        request.setAttribute("times", times);
-        RequestDispatcher rd = request.getRequestDispatcher("/Jogadores/Jogador.jsp");
+        Tecnico tecnico = TDAO.findTecnico(id);
+        request.setAttribute("tecnico", tecnico);
+        RequestDispatcher rd = request.getRequestDispatcher("/Tecnicos/Tecnico.jsp");
         rd.forward(request, response);
     }
     
     private void salvar(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String nome = request.getParameter("nome");
-        String timeIdGet = request.getParameter("time_id");
-        int timeId = timeIdGet == null || timeIdGet.equals("")
-                ? 0
-                : Integer.parseInt(timeIdGet);
-        if (timeId == 0) throw new ServletException("Deu pau no dropdown");
-        Equipe time = TDAO.findEquipe(timeId);
         String idGet = request.getParameter("id");
-        int id = idGet == null || idGet.equals("")
-                ? 0 
-                : Integer.parseInt(idGet);
-        Jogador j = new Jogador(nome, time);
-        j.setId(id);
-        if (j.getId() == 0)
-            JDAO.create(j);
+        Tecnico t = new Tecnico();
+        t.setNome(nome);
+        if (idGet == null || idGet.equals(""))
+            TDAO.create(t);
         else
             try {
-                JDAO.edit(j);
+                t.setId(Integer.parseInt(idGet));
+                TDAO.edit(t);
             } catch (Exception ex) {
                 log("Erro editando jogador.", ex);
             }
-        RequestDispatcher rd = request.getRequestDispatcher("./JogadorServlet?acao=listar");
+        RequestDispatcher rd = request.getRequestDispatcher("./TecnicoServlet?acao=listar");
         rd.forward(request, response);
     }
     
     private void excluir(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-            String[] idsReq = request.getParameterValues("ids");
-            Integer[] ids = new Integer[idsReq.length];
-            StringBuilder sb = new StringBuilder("DELETE FROM Jogador j WHERE j.id IN (");
+            String[] idsGet = request.getParameterValues("ids");
+            Integer[] ids = new Integer[idsGet.length];
+            StringBuilder sb = new StringBuilder("DELETE FROM Tecnico t WHERE t.id IN (");
             for (int i = 0; i < ids.length; i++) {
-                ids[i] = Integer.parseInt(idsReq[i]);
+                ids[i] = Integer.parseInt(idsGet[i]);
                 sb.append(":id").append(i);
                 if (i + 1 < ids.length) {
                     sb.append(", ");
@@ -163,7 +155,7 @@ public class JogadorServlet extends HttpServlet {
                     sb.append(")");
                 }
             }
-        EntityManager em = JDAO.getEntityManager();
+        EntityManager em = TDAO.getEntityManager();
         try {
             em.getTransaction().begin();
             Query query = em.createQuery(sb.toString());
@@ -173,12 +165,12 @@ public class JogadorServlet extends HttpServlet {
             query.executeUpdate();
             em.getTransaction().commit();
         } catch (Exception e) {
-            log("Erro ao excluir jogador.", e);
+            log("Erro ao excluir tecnico.", e);
         } finally {
             if (em != null) {
                 em.close();
             }
-            RequestDispatcher rd = request.getRequestDispatcher("./JogadorServlet?acao=listar");
+            RequestDispatcher rd = request.getRequestDispatcher("./TecnicoServlet?acao=listar");
             rd.forward(request, response);
         }
         
