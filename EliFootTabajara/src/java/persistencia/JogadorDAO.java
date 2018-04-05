@@ -16,6 +16,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import modelo.Jogador;
 import modelo.Equipe;
+import modelo.Posicao;
 import persistencia.exceptions.NonexistentEntityException;
 
 /**
@@ -42,6 +43,11 @@ public class JogadorDAO implements Serializable {
             if (time != null) {
                 time = em.getReference(time.getClass(), time.getId());
                 jogador.setEquipe(time);
+            }
+            Posicao posicao = jogador.getPosicao();
+            if (posicao != null) {
+                posicao = em.getReference(posicao.getClass(), posicao.getId());
+                jogador.setPosicao(posicao);
             }
             em.persist(jogador);
             if (time != null) {
@@ -77,6 +83,12 @@ public class JogadorDAO implements Serializable {
                 timeNew.getJogadores().add(jogador);
                 timeNew = em.merge(timeNew);
             }
+            Posicao posicao = jogador.getPosicao();
+            if (posicao != null) {
+                posicao = em.getReference(posicao.getClass(), posicao.getId());
+                jogador.setPosicao(posicao);
+            }
+            jogador = em.merge(jogador);
             em.getTransaction().commit();
         } catch (Exception ex) {
             String msg = ex.getLocalizedMessage();

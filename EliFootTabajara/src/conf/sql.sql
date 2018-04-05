@@ -19,3 +19,5 @@ CREATE TABLE public.jogador (
 
 SELECT * FROM "time";
 SELECT * FROM jogador;
+
+SELECT * FROM posicao;

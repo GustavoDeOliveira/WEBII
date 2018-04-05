@@ -16,7 +16,7 @@
     <table class="table table-primary table-hover">
         <thead>
             <tr>
-                <th colspan="3">
+                <th colspan="4">
                     <h4 class="text-center text-default">Lista de Jogadores</h4>
                 </th>
                 <th><a href="./JogadorServlet?acao=editar" class="btn btn-success btn-flat">Novo Jogador</a></th>
@@ -25,6 +25,7 @@
                 <th width="40">#</th>
                 <th>Nome</th>
                 <th>Time</th>
+                <th>Posição</th>
                 <th width="60">Ações</th>
             </tr>
         </thead>
@@ -32,7 +33,7 @@
             <c:choose>
                 <c:when test="${jogadores.isEmpty()}">
                     <tr class='warning'>
-                        <td colspan='4'>Não há nenhum jogador cadastrado.</td>
+                        <td colspan='5'>Não há nenhum jogador cadastrado.</td>
                     </tr>
                 </c:when>
                 <c:otherwise>
@@ -48,6 +49,11 @@
                                 </a>
                             </td>
                             <td>
+                                <a class="btn btn-xs btn-link btn-flat" href="./PosicaoServlet?acao=editar&id=${jogador.posicao.id}">
+                                    ${jogador.posicao.descricao}
+                                </a>
+                            </td>
+                            <td>
                                 <a class="btn btn-xs btn-warning btn-flat" href="./JogadorServlet?acao=editar&id=${jogador.id}">
                                     Editar
                                 </a>
@@ -58,7 +64,7 @@
                         <td>
                             <input class="btn btn-xs btn-danger btn-flat" type="submit" value="X" id="btn_exc" disabled/>
                         </td>
-                        <td colspan="3"></td>
+                        <td colspan="4"></td>
                     </tr>
                 </c:otherwise>
             </c:choose>

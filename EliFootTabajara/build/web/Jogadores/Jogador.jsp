@@ -54,6 +54,24 @@
         </select>
     </div>
     <div class="form-group">
+        <label for="posicao_id">Time</label>
+        <select class="form-control" name="posicao_id" id="posicao_id" required onchange="validar();">
+            <c:choose>
+                <c:when test="${posicoes.isEmpty()}">
+                    <option id='invalid_option2' class='alert-warning' value='0' selected>Não há nenhuma posição disponível.</option>
+                </c:when>
+                <c:otherwise>
+                    <option id='invalid_option2' value='0' selected>Selecione um posição</option>
+                    <c:forEach items="${posicoes}" var="posicao">
+                        <option value="${posicao.id}" <c:if test="${posicao.id == jogador.equipe.id}">selected</c:if>>
+                            ${posicao.descricao}
+                        </option>
+                    </c:forEach>
+                </c:otherwise>
+            </c:choose>
+        </select>
+    </div>
+    <div class="form-group">
         <input type="hidden" name="id" id="id" ${jogador.id}/>
         <input id="btn_salvar" disabled class="btn btn-success btn-lg col-md-auto offset-md-10 offset-sm-8 offset-xs-6" type="submit" value="Salvar"/>
     </div>
@@ -67,7 +85,8 @@
             return;
         }
         var opt = document.getElementById("invalid_option");
-        if (opt.selected) {
+        var opt2 = document.getElementById("invalid_option2");
+        if (opt.selected || opt2.selected) {
             salvar.disabled = "disabled";
             return;
         }

@@ -21,6 +21,7 @@ public class Jogador extends Pessoa {
     private Equipe equipe;
     
     @OneToOne(optional = false)
+    @JoinColumn(name="posicao_id", referencedColumnName = "id")
     Posicao posicao;
 
     public Posicao getPosicao() {

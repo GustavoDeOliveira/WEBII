@@ -44,6 +44,9 @@
                                 <li>
                                     <a href="/EliFootTabajara/TecnicoServlet?acao=listar">Técnicos</a>
                                 </li>
+                                <li>
+                                    <a href="/EliFootTabajara/PosicaoServlet?acao=listar">Posições</a>
+                                </li>
                             </ul>
                         </div>
                     </div>
