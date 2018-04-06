@@ -54,7 +54,9 @@ public class JogadorServlet extends HttpServlet {
         String acao = request.getParameter("acao");
         switch(acao) {
             case "listar":
-                listar(request, response);
+                String idGet = request.getParameter("posicao_id");
+                Integer id = "".equals(idGet) || idGet == null ? null : Integer.parseInt(idGet);
+                listar(request, response, id);
                 break;
             case "editar":
                 editar(request, response);
@@ -109,9 +111,14 @@ public class JogadorServlet extends HttpServlet {
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
-
-    private void listar(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        request.setAttribute("jogadores", JDAO.findJogadorEntities());
+    
+    private void listar(HttpServletRequest request, HttpServletResponse response, Integer posicaoId) throws ServletException, IOException {
+        if (posicaoId == null)
+            request.setAttribute("jogadores", JDAO.findJogadorEntities());
+        else
+            request.setAttribute("jogadores", JDAO.findJogadorEntitiesByPosicao(posicaoId));
+        
+        request.setAttribute("posicoes", PDAO.findPosicaoEntities());
         RequestDispatcher rd = request.getRequestDispatcher("/Jogadores/Index.jsp");
         rd.forward(request, response);
     }
@@ -132,25 +139,36 @@ public class JogadorServlet extends HttpServlet {
     private void salvar(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String nome = request.getParameter("nome");
         String timeIdGet = request.getParameter("time_id");
-        int timeId = timeIdGet == null || timeIdGet.equals("")
-                ? 0
-                : Integer.parseInt(timeIdGet);
-        if (timeId == 0) throw new ServletException("Deu pau no dropdown");
+        String posicaoIdGet = request.getParameter("posicao_id");
+        
+        if (timeIdGet == null || timeIdGet.equals(""))
+            throw new ServletException("Deu pau no dropdown de time.");
+        
+        if (posicaoIdGet == null || posicaoIdGet.equals(""))
+            throw new ServletException("Deu pau no dropdown de posicao.");
+            
+        int timeId = Integer.parseInt(timeIdGet);
+        int posicaoId = Integer.parseInt(posicaoIdGet);
+        
         Equipe time = TDAO.findEquipe(timeId);
+        Posicao posicao = PDAO.findPosicao(posicaoId);
         String idGet = request.getParameter("id");
         int id = idGet == null || idGet.equals("")
                 ? 0 
                 : Integer.parseInt(idGet);
-        Jogador j = new Jogador(nome, time);
+        Jogador j = new Jogador();
         j.setId(id);
-        if (j.getId() == 0)
-            JDAO.create(j);
-        else
-            try {
+        j.setNome(nome);
+        j.setEquipe(time);
+        j.setPosicao(posicao);
+        try {
+            if (j.getId() == 0)
+                JDAO.create(j);
+            else
                 JDAO.edit(j);
-            } catch (Exception ex) {
-                log("Erro editando jogador.", ex);
-            }
+        } catch (Exception ex) {
+            log("Erro editando jogador.", ex);
+        }
         RequestDispatcher rd = request.getRequestDispatcher("./JogadorServlet?acao=listar");
         rd.forward(request, response);
     }

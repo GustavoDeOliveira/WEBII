@@ -11,6 +11,18 @@
         </file>
     </editor-bookmarks>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
-        <group/>
+        <group>
+            <file>file:/C:/Users/gugu_/Dropbox/github/WEBII/EliFootTabajara/web/Jogadores/Jogador.jsp</file>
+            <file>file:/C:/Users/gugu_/Dropbox/github/WEBII/EliFootTabajara/web/Jogadores/Index.jsp</file>
+            <file>file:/C:/Users/gugu_/Dropbox/github/WEBII/EliFootTabajara/src/java/persistencia/JogadorDAO.java</file>
+            <file>file:/C:/Users/gugu_/Dropbox/github/WEBII/EliFootTabajara/src/java/modelo/Posicao.java</file>
+            <file>file:/C:/Users/gugu_/Dropbox/github/WEBII/EliFootTabajara/web/Posicoes/Index.jsp</file>
+            <file>file:/C:/Users/gugu_/Dropbox/github/WEBII/EliFootTabajara/src/java/servlets/JogadorServlet.java</file>
+            <file>file:/C:/Users/gugu_/Dropbox/github/WEBII/EliFootTabajara/src/java/servlets/PosicaoServlet.java</file>
+            <file>file:/C:/Users/gugu_/Dropbox/github/WEBII/EliFootTabajara/web/shared/ini.jsp</file>
+            <file>file:/C:/Users/gugu_/Dropbox/github/WEBII/EliFootTabajara/web/Posicoes/Posicao.jsp</file>
+            <file>file:/C:/Users/gugu_/Dropbox/github/WEBII/EliFootTabajara/src/java/modelo/Jogador.java</file>
+            <file>file:/C:/Users/gugu_/Dropbox/github/WEBII/EliFootTabajara/src/conf/sql.sql</file>
+        </group>
     </open-files>
 </project-private>

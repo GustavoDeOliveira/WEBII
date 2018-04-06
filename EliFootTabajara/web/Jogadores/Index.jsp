@@ -12,14 +12,24 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@include file="../shared/ini.jsp" %>
-<form method="POST" action="./JogadorServlet?acao=excluir">
     <table class="table table-primary table-hover">
         <thead>
             <tr>
-                <th colspan="4">
+                <th colspan="3">
                     <h4 class="text-center text-default">Lista de Jogadores</h4>
                 </th>
-                <th><a href="./JogadorServlet?acao=editar" class="btn btn-success btn-flat">Novo Jogador</a></th>
+                <th>
+                    <form class="form-inline" method="POST" action="./JogadorServlet?acao=listar">
+                        <select class="form-control" name="posicao_id">
+                            <option value="">Todos</option>
+                            <c:forEach items="${posicoes}" var="posicao">
+                                <option value="${posicao.id}">${posicao.descricao}</option>
+                            </c:forEach>
+                        </select>
+                        <input type="submit" value="Filtrar" class="btn btn-success"/>
+                    </form>
+                </th>
+                <th><a href="./JogadorServlet?acao=editar" class="btn btn-success">Novo Jogador</a></th>
             </tr>
             <tr>
                 <th width="40">#</th>
@@ -37,40 +47,41 @@
                     </tr>
                 </c:when>
                 <c:otherwise>
-                    <c:forEach items="${jogadores}" var="jogador">
+                    <form method="POST" action="./JogadorServlet?acao=excluir">
+                        <c:forEach items="${jogadores}" var="jogador">
+                            <tr>
+                                <td>
+                                    <input type="checkbox" value="${jogador.id}" name="ids" onclick="checarExcluir()"/>
+                                </td>
+                                <td>${jogador.nome}</td>
+                                <td>
+                                    <a class="btn btn-xs btn-link btn-flat" href="./TimeServlet?acao=editar&id=${jogador.equipe.id}">
+                                        ${jogador.equipe.nome}
+                                    </a>
+                                </td>
+                                <td>
+                                    <a class="btn btn-xs btn-link btn-flat" href="./PosicaoServlet?acao=editar&id=${jogador.posicao.id}">
+                                        ${jogador.posicao.descricao}
+                                    </a>
+                                </td>
+                                <td>
+                                    <a class="btn btn-xs btn-warning btn-flat" href="./JogadorServlet?acao=editar&id=${jogador.id}">
+                                        Editar
+                                    </a>
+                                </td>
+                            </tr>
+                        </c:forEach>
                         <tr>
                             <td>
-                                <input type="checkbox" value="${jogador.id}" name="ids" onclick="checarExcluir()"/>
+                                <input class="btn btn-xs btn-danger btn-flat" type="submit" value="X" id="btn_exc" disabled/>
                             </td>
-                            <td>${jogador.nome}</td>
-                            <td>
-                                <a class="btn btn-xs btn-link btn-flat" href="./TimeServlet?acao=editar&id=${jogador.equipe.id}">
-                                    ${jogador.equipe.nome}
-                                </a>
-                            </td>
-                            <td>
-                                <a class="btn btn-xs btn-link btn-flat" href="./PosicaoServlet?acao=editar&id=${jogador.posicao.id}">
-                                    ${jogador.posicao.descricao}
-                                </a>
-                            </td>
-                            <td>
-                                <a class="btn btn-xs btn-warning btn-flat" href="./JogadorServlet?acao=editar&id=${jogador.id}">
-                                    Editar
-                                </a>
-                            </td>
+                            <td colspan="4"></td>
                         </tr>
-                    </c:forEach>
-                    <tr>
-                        <td>
-                            <input class="btn btn-xs btn-danger btn-flat" type="submit" value="X" id="btn_exc" disabled/>
-                        </td>
-                        <td colspan="4"></td>
-                    </tr>
+                    </form>
                 </c:otherwise>
             </c:choose>
         </tbody>
     </table>
-</form>
 <script type="text/javascript">
     function checarExcluir() {
         var checkboxes = document.getElementsByTagName("input");

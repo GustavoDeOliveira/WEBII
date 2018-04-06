@@ -13,7 +13,7 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "jogador")
-@NamedQuery(name = "findJogadoresByPosicao", query = "SELECT j FROM Jogador j WHERE j.posicao = :posicao")
+@NamedQuery(name = "findJogadoresByPosicaoId", query = "SELECT j FROM Jogador j WHERE j.posicao.id = :posicaoId")
 public class Jogador extends Pessoa {
 
     @ManyToOne(optional = false, cascade = CascadeType.REMOVE)

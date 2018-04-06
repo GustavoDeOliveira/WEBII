@@ -234,5 +234,27 @@ public class JogadorDAO implements Serializable {
             em.close();
         }
     }
-    
+
+    public Object findJogadorEntitiesByPosicao(Integer posicaoId) {
+        return findJogadorEntitiesByPosicao(posicaoId, true, -1, -1);
+    }
+
+    public List<Jogador> findJogadorEntitiesByPosicao(Integer posicaoId, int maxResults, int firstResult) {
+        return findJogadorEntitiesByPosicao(posicaoId, false, maxResults, firstResult);
+    }
+
+    private List<Jogador> findJogadorEntitiesByPosicao(Integer posicaoId, boolean all, int maxResults, int firstResult) {
+        EntityManager em = getEntityManager();
+        try {
+            Query q = em.createNamedQuery("findJogadoresByPosicaoId");
+            if (!all) {
+                q.setMaxResults(maxResults);
+                q.setFirstResult(firstResult);
+            }
+            q.setParameter("posicaoId", posicaoId);
+            return q.getResultList();
+        } finally {
+            em.close();
+        }
+    }
 }
