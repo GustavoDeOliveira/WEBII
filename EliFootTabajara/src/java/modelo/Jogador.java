@@ -16,7 +16,7 @@ import javax.persistence.*;
 @NamedQuery(name = "findJogadoresByPosicaoId", query = "SELECT j FROM Jogador j WHERE j.posicao.id = :posicaoId")
 public class Jogador extends Pessoa {
 
-    @ManyToOne(optional = false, cascade = CascadeType.REMOVE)
+    @ManyToOne(optional = false, cascade = {CascadeType.REMOVE})
     @JoinColumn(name="equipe_id", referencedColumnName = "id")
     private Equipe equipe;
     

@@ -20,7 +20,7 @@
                 </th>
                 <th>
                     <form class="form-inline" method="POST" action="./JogadorServlet?acao=listar">
-                        <select class="form-control" name="posicao_id">
+                        <select class="form-control" name="filtroPosicaoId">
                             <option value="">Todos</option>
                             <c:forEach items="${posicoes}" var="posicao">
                                 <option value="${posicao.id}">${posicao.descricao}</option>

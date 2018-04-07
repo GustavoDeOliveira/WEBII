@@ -12,6 +12,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityNotFoundException;
 import javax.persistence.Persistence;
 import javax.persistence.Query;
 import javax.servlet.RequestDispatcher;
@@ -54,7 +55,7 @@ public class JogadorServlet extends HttpServlet {
         String acao = request.getParameter("acao");
         switch(acao) {
             case "listar":
-                String idGet = request.getParameter("posicao_id");
+                String idGet = request.getParameter("filtroPosicaoId");
                 Integer id = "".equals(idGet) || idGet == null ? null : Integer.parseInt(idGet);
                 listar(request, response, id);
                 break;
@@ -174,36 +175,46 @@ public class JogadorServlet extends HttpServlet {
     }
     
     private void excluir(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-            String[] idsReq = request.getParameterValues("ids");
-            Integer[] ids = new Integer[idsReq.length];
-            StringBuilder sb = new StringBuilder("DELETE FROM Jogador j WHERE j.id IN (");
-            for (int i = 0; i < ids.length; i++) {
-                ids[i] = Integer.parseInt(idsReq[i]);
-                sb.append(":id").append(i);
-                if (i + 1 < ids.length) {
-                    sb.append(", ");
-                } else {
-                    sb.append(")");
-                }
-            }
-        EntityManager em = JDAO.getEntityManager();
-        try {
-            em.getTransaction().begin();
-            Query query = em.createQuery(sb.toString());
-            for (int i = 0; i < ids.length; i++) {
-                query.setParameter("id" + i, ids[i]);
-            }
-            query.executeUpdate();
-            em.getTransaction().commit();
-        } catch (Exception e) {
-            log("Erro ao excluir jogador.", e);
-        } finally {
-            if (em != null) {
-                em.close();
-            }
-            RequestDispatcher rd = request.getRequestDispatcher("./JogadorServlet?acao=listar");
-            rd.forward(request, response);
+        String[] idsReq = request.getParameterValues("ids");
+        Integer[] ids = new Integer[idsReq.length];
+        for (int i = 0; i < ids.length; i++) {
+            ids[i] = Integer.parseInt(idsReq[i]);
         }
+        try {
+            JDAO.destroy(ids);
+        } catch (NonexistentEntityException e) {
+            throw new ServletException("Erro excluindo jogadores.", e);
+        }
+        RequestDispatcher rd = request.getRequestDispatcher("./JogadorServlet?acao=listar");
+        rd.forward(request, response);
+//        StringBuilder sb = new StringBuilder("DELETE FROM Jogador j WHERE j.id IN (");
+//        for (int i = 0; i < ids.length; i++) {
+//            ids[i] = Integer.parseInt(idsReq[i]);
+//            sb.append(":id").append(i);
+//            if (i + 1 < ids.length) {
+//                sb.append(", ");
+//            } else {
+//                sb.append(")");
+//            }
+//        }
+//        EntityManager em = JDAO.getEntityManager();
+//        try {
+//            em.getTransaction().begin();
+//            Query query = em.createQuery(sb.toString());
+//            for (int i = 0; i < ids.length; i++) {
+//                query.setParameter("id" + i, ids[i]);
+//            }
+//            query.executeUpdate();
+//            em.getTransaction().commit();
+//        } catch (Exception e) {
+//            log("Erro ao excluir jogador.", e);
+//        } finally {
+//            if (em != null) {
+//                em.close();
+//            }
+//            RequestDispatcher rd = request.getRequestDispatcher("./JogadorServlet?acao=listar");
+//            rd.forward(request, response);
+//        }
         
     }
     

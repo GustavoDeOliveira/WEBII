@@ -15,7 +15,7 @@
     <table class="table table-hover table-primary">
         <thead>
             <tr>
-                <th colspan="2">
+                <th colspan="3">
                     <h4 class="text-center text-default">Lista de Times</h4>
                 </th>
                 <th><a href="./TimeServlet?acao=editar" class="btn btn-success btn-block">Novo Time</a></th>
@@ -23,6 +23,7 @@
             <tr>
                 <th width="20">#</th>
                 <th>Nome</th>
+                <th>Técnico</th>
                 <th width="40">Ações</th>
             </tr>
         </thead>
@@ -30,7 +31,7 @@
             <c:choose>
                 <c:when test="${times.isEmpty()}">
                     <tr class="warning">
-                        <td colspan="3">Não há nenhum time cadastrado.</td>
+                        <td colspan="4">Não há nenhum time cadastrado.</td>
                     </tr>
                 </c:when>
                 <c:otherwise>
@@ -40,6 +41,7 @@
                                 <input type="checkbox" value="${time.id}" name="ids" onclick="checarExcluir()" <c:if test="${!time.jogadores.isEmpty()}">disabled</c:if>/>
                             </td>
                             <td>${time.nome}</td>
+                            <td>${time.tecnico.nome}</td>
                             <td>
                                 <a class="btn btn-xs btn-warning btn-flat" href="./TimeServlet?acao=editar&id=${time.id}">
                                     Editar
@@ -51,7 +53,7 @@
                         <td>
                             <input class="btn btn-xs btn-danger btn-flat" type="submit" value="X" id="btn_exc" disabled/>
                         </td>
-                        <td colspan="2"></td>
+                        <td colspan="3"></td>
                     </tr>
                 </c:otherwise>
             </c:choose>

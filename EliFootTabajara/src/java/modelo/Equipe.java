@@ -17,10 +17,10 @@ import javax.persistence.*;
 @Table(name = "equipe")
 public class Equipe extends Entidade {
 
-    @OneToMany(mappedBy = "equipe", orphanRemoval = true, cascade = {CascadeType.REMOVE, CascadeType.PERSIST})
+    @OneToMany(mappedBy = "equipe", orphanRemoval = true)
     private List<Jogador> jogadores;
     
-    @OneToOne(cascade = {CascadeType.PERSIST})
+    @OneToOne
     private Tecnico tecnico;
     
     @Column(unique = true)

@@ -110,7 +110,11 @@ public class PosicaoServlet extends HttpServlet {
     }// </editor-fold>
 
     private void listar(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        request.setAttribute("posicoes", PDAO.findPosicaoEntities());
+        List<Posicao> posicoes = PDAO.findPosicaoEntities();
+        posicoes.sort((p1, p2) -> {
+            return p1.getDescricao().compareToIgnoreCase(p2.getDescricao());
+        });
+        request.setAttribute("posicoes", posicoes);
         RequestDispatcher rd = request.getRequestDispatcher("/Posicoes/Index.jsp");
         rd.forward(request, response);
     }

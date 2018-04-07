@@ -7,6 +7,7 @@ package persistencia;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -139,25 +140,20 @@ public class JogadorDAO implements Serializable {
             em.getTransaction().begin();
             List<Jogador> jogadores;
             try {
-                jogadores = em.createNamedQuery("findJogadoresWithIds")
-                        .setParameter("ids", ids)
-                        .getResultList();
+                jogadores = findJogadorEntitiesById(ids);
                 jogadores.forEach((jogador) -> {
                     jogador.getId();
                 });
             } catch (EntityNotFoundException enfe) {
-                throw new NonexistentEntityException("The jogador with id " + ids + " no longer exists.", enfe);
+                throw new NonexistentEntityException("The jogador with id " + Arrays.toString(ids) + " no longer exists.", enfe);
             }
-            final List<Equipe> times = new ArrayList();
-            final EntityManager enMa = em;
-            jogadores.forEach((jogador) -> {
+            for (Jogador jogador : jogadores) {
                 Equipe time = jogador.getEquipe();
                 if (time != null) {
                     time.getJogadores().remove(jogador);
-                    enMa.merge(times);
+                    em.merge(time);
                 }
-            });
-            em.remove(jogadores);
+            };
             em.getTransaction().commit();
         } finally {
             if (em != null) {
@@ -201,8 +197,15 @@ public class JogadorDAO implements Serializable {
     private List<Jogador> findJogadorEntitiesById(Integer[] ids, boolean all, int maxResults, int firstResult) {
         EntityManager em = getEntityManager();
         try {
-            Query q = em.createNamedQuery("findJogadoresWithIds");
-            q.setParameter("ids", ids);
+            StringBuilder query = new StringBuilder("SELECT j FROM Jogador j WHERE j.id IN (");
+            for(int i = 0; i < ids.length - 1; i++) {
+                query.append(":id").append(i).append(", ");
+            }
+            query.append(":id").append(ids.length - 1).append(")");
+            Query q = em.createQuery(query.toString());
+            for(int i = 0; i < ids.length; i++) {
+                q.setParameter("id" + i, ids[i]);
+            }
             if (!all) {
                 q.setMaxResults(maxResults);
                 q.setFirstResult(firstResult);
@@ -247,11 +250,11 @@ public class JogadorDAO implements Serializable {
         EntityManager em = getEntityManager();
         try {
             Query q = em.createNamedQuery("findJogadoresByPosicaoId");
+            q.setParameter("posicaoId", posicaoId);
             if (!all) {
                 q.setMaxResults(maxResults);
                 q.setFirstResult(firstResult);
             }
-            q.setParameter("posicaoId", posicaoId);
             return q.getResultList();
         } finally {
             em.close();
