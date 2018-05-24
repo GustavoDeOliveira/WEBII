@@ -3,21 +3,23 @@ package controle;
 import javax.inject.Inject;
 
 import br.com.caelum.vraptor.Controller;
+import br.com.caelum.vraptor.Delete;
 import br.com.caelum.vraptor.Get;
 import br.com.caelum.vraptor.Path;
 import br.com.caelum.vraptor.Post;
+import br.com.caelum.vraptor.Put;
 import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.validator.Validator;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import modelo.Atividade;
-import persistencia.ClienteDAO;
+import modelo.Aluno;
+import persistencia.AlunoDAO;
 import persistencia.exceptions.NonexistentEntityException;
 
 @Controller
-public class ClienteController {
+public class AlunoController {
 
     @Inject
     private Result result;
@@ -27,46 +29,49 @@ public class ClienteController {
 
     @Inject
     private EntityManagerFactory emf;
+    
+    @Inject
+    private AlunoDAO dao;
 
-    public ClienteController() {
+    public AlunoController() {
         this.emf = Persistence.createEntityManagerFactory("default");
     }
 
     @Path("/")
     public void index() {
         
-        this.result.include("vetCliente", new ClienteDAO(emf).findClienteEntities());
+        this.result.include("vetCliente", dao.findAlunoEntities());
     }
     
     
     @Get
     @Path("/cliente/tela_alterar/{id}")
-    public Atividade tela_alterar(int id) {
-        return new ClienteDAO(emf).findCliente(id);        
+    public Aluno editar(int id) {
+        return dao.findAluno(id);        
     }    
     
     
-    @Get
+    @Delete
     @Path("/cliente/excluir/{id}")
     public void excluir(int id) throws NonexistentEntityException {
         validation.onErrorForwardTo(this).index();
-        new ClienteDAO(emf).destroy(id);
+        dao.destroy(id);
         this.result.redirectTo(this).index();
     }
     
     
-    @Post
+    @Put
     @Path("/cliente/alterar")
-    public void alterar(@NotNull @Valid Atividade cliente) throws Exception {
-        validation.onErrorForwardTo(this).tela_alterar(cliente.getId());
-        new ClienteDAO(emf).edit(cliente);
+    public void editar(@NotNull @Valid Aluno aluno) throws Exception {
+        validation.onErrorForwardTo(this).editar(aluno.getId());
+        dao.edit(aluno);
         this.result.redirectTo(this).index();
     }
 
     @Post
     @Path("/cliente/adicionar")
-    public void adicionar(@NotNull @Valid Atividade cliente) {
+    public void adicionar(@NotNull @Valid Aluno aluno) {
         validation.onErrorForwardTo(this).index();
-        new ClienteDAO(emf).create(cliente);
+        dao.create(aluno);
     }
 }

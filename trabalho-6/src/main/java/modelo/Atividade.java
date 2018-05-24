@@ -6,50 +6,60 @@
 package modelo;
 
 import java.io.Serializable;
+import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import javax.validation.constraints.Digits;
 
 
 @Entity
-@Table(name = "cliente")
-public class Cliente implements Serializable {
+@Table(name = "atividade")
+public class Atividade implements Serializable {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
     private int id;
     
-    // valida se o nome não é nulo e possui tamanho entre 10 e 50
-    @NotNull(message = "nome nao pode ser vazio. idiota!!") 
-    @Size(min=1, max=5, message = "nome tem ser maior ou igual a 1 e menor ou igual a 5") 
+    @NotNull(message = "O nome não pode ser vazio.")
+    @Size(min=1, message = "O nome não pode ser vazio.") 
+    @Column(nullable = false)
     private String nome;
+    
+    @NotNull(message = "O preço não pode ser nulo.")
+    @Digits(fraction = 2, integer = 10, message = "Valor inválido.")
+    @Column(precision = 2, scale = 10, nullable = false)
+    private double preco;
+    
+    @ManyToMany(mappedBy = "aluno")
+    private List<Aluno> alunos;
 
-    // valida se a data de nascimento está no passado
-//    @Past 
-//    private Date nascimento;
-
-    public Cliente() {
+    public Atividade() {
     }
 
     public int getId() {
         return id;
     }
 
+    public List<Aluno> getAlunos() {
+        return alunos;
+    }
+
+    public void setAlunos(List<Aluno> alunos) {
+        this.alunos = alunos;
+    }
+
     public void setId(int id) {
         this.id = id;
     }
-    
-    
 
-    
-    
-    
     public String getNome() {
         return nome;
     }
@@ -57,7 +67,13 @@ public class Cliente implements Serializable {
     public void setNome(String nome) {
         this.nome = nome;
     }
-    
-    
+
+    public double getPreco() {
+        return preco;
+    }
+
+    public void setPreco(double preco) {
+        this.preco = preco;
+    }
     
 }
