@@ -1,12 +1,13 @@
 <%@include file="/WEB-INF/jspf/ini.jspf" %>
+<%@page pageEncoding="UTF-8"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <table class="table table-hover">
     <thead>
         <tr>
-            <th>Nome</th>
-            <th>CPF</th>
-            <th>E-Mail</th>
-            <th width="160">Ações</th>
+            <th width="200">Nome</th>
+            <th width="160">CPF</th>
+            <th width="400">E-Mail</th>
+            <th width="220">AÃ§Ãµes</th>
         </tr>
     </thead>
     <tbody>
@@ -16,8 +17,8 @@
                 <td>${aluno.cpf}</td>
                 <td>${aluno.email}</td>
                 <td>
-                    <a href="#detalhes-${aluno.id}" data-toggle="collapse" class="btn btn-xs btn-primary">
-                        Editar
+                    <a data-target="#detalhes-${aluno.id}" data-toggle="collapse" class="btn btn-xs btn-primary">
+                        Detalhes
                     </a>
                     <a href="${linkTo[AlunoController].editar()}${aluno.id.toString()}" class="btn btn-xs btn-warning">
                         Editar
@@ -28,15 +29,22 @@
                 </td>
             </tr>
             <tr class="collapse" id="detalhes-${aluno.id}">
-                <td><strong>Último pagamento:</strong> ${aluno.ultimoPagamento}</td>
-                <td><strong>Prazo para o próximo pagamento:</strong> ${aluno.prazoPagamento}</td>
+                <jsp:useBean id="date" class="java.util.Date"/>
+                <td colspan="2">
+                    <strong>Ãšltimo pagamento:</strong>
+                    <fmt:formatDate value="${aluno.ultimoPagamento}" type="date" pattern="dd-MM-yyyy"/>
+                </td>
+                <td colspan="2">
+                    <strong>Prazo para o prÃ³ximo pagamento:</strong> 
+                    <fmt:formatDate value="${aluno.prazoPagamento}" type="date" pattern="dd-MM-yyyy"/>
+                </td>
             </tr>
         </c:forEach>
     </tbody>
     <tfoot>
         <tr>
             <th colspan="4">
-                <a class="btn btn-success pull-right" href="${linkTo[AlunoController].editar()}-1">
+                <a class="btn btn-success btn-block" href="${linkTo[AlunoController].editar()}-1">
                     &plus;
                 </a>
             </th>

@@ -6,8 +6,9 @@
 package modelo;
 
 import java.io.Serializable;
-import java.sql.Date;
+import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -15,6 +16,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Past;
 import javax.validation.constraints.Size;
@@ -50,9 +52,11 @@ public class Aluno implements Serializable {
 
     @Past
     @Column(name = "ultimo_pagamento")
+    @Temporal(javax.persistence.TemporalType.DATE)
     private Date ultimoPagamento;
 
     @Column(name = "prazo_pagamento")
+    @Temporal(javax.persistence.TemporalType.DATE)
     private Date prazoPagamento;
 
     @ManyToMany(mappedBy = "alunos")
@@ -123,6 +127,29 @@ public class Aluno implements Serializable {
 
     public void setAtividades(List<Atividade> atividades) {
         this.atividades = atividades;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 13 * hash + this.id;
+        hash = 13 * hash + Objects.hashCode(this.cpf);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Aluno other = (Aluno) obj;
+        return this.id == other.id;
     }
 
 }

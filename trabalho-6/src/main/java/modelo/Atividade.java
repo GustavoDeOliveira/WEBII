@@ -7,6 +7,7 @@ package modelo;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Objects;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -37,7 +38,7 @@ public class Atividade implements Serializable {
     private String nome;
     
     @NotNull(message = "O preço não pode ser nulo.")
-    @Digits(fraction = 2, integer = 10, message = "Valor inválido.")
+    @Digits(fraction = 2, integer = 8, message = "Valor inválido.")
     @Column(precision = 2, scale = 10, nullable = false)
     private double preco;
     
@@ -84,6 +85,29 @@ public class Atividade implements Serializable {
 
     public void setPreco(double preco) {
         this.preco = preco;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 23 * hash + this.id;
+        hash = 23 * hash + Objects.hashCode(this.nome);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Atividade other = (Atividade) obj;
+        return this.id == other.id;
     }
     
 }

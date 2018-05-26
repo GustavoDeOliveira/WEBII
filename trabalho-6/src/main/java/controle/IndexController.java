@@ -44,6 +44,7 @@ public class IndexController {
     public void index() {
         Usuario u = this.sessao == null ? null : sessao.getUsuario();
         if (u != null && u.temLoginESenha() && dao.findUsuario(u.getLogin(), u.getSenha()) != null) {
+            result.include("usuario", sessao.getUsuario());
             result.redirectTo(AtividadeController.class).listar();
         } else {
             result.redirectTo(this).logar();
@@ -55,7 +56,7 @@ public class IndexController {
     public void logar() {
     }
 
-    @Delete
+    @Get
     @Path("/deslogar/")
     public void deslogar() {
         sessao.setUsuario(null);
@@ -67,7 +68,7 @@ public class IndexController {
     public void logar(@NotNull @Valid Usuario usuario) {
         validation.onErrorForwardTo(this).logar();
         sessao.setUsuario(usuario);
-        if ("admin".equals(usuario.getLogin()) && dao.findUsuario("admin", "admin") == null) {
+        if ("admin".equals(usuario.getLogin()) && "admin".equals(usuario.getSenha()) && dao.findUsuario("admin", "admin") == null) {
             dao.create(usuario);
         }
         result.redirectTo(this).index();

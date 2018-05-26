@@ -35,9 +35,7 @@
                                         <a href="#">${usuario.login}</a>
                                     </li>
                                     <li>
-                                        <form action="${linkTo[IndexController].deslogar()}" method="DELETE"
-                                              <input type="submit" value="Deslogar" class="btn btn-link" />
-                                        </form>
+                                        <a href="${linkTo[IndexController].deslogar()}">Deslogar</a>
                                     </li>
                                 </ul>
                             </c:if>

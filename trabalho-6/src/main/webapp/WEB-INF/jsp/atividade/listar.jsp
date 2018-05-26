@@ -1,12 +1,13 @@
 <%@include file="/WEB-INF/jspf/ini.jspf" %>
+<%@page pageEncoding="UTF-8"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <table class="table table-hover">
     <thead>
         <tr>
             <th>Nome</th>
-            <th width="100">Preço</th>
+            <th width="100">PreÃ§o</th>
             <th width="100">Alunos</th>
-            <th width="160">Ações</th>
+            <th width="160">AÃ§Ãµes</th>
         </tr>
     </thead>
     <tbody>
@@ -19,9 +20,9 @@
                     <a href="${linkTo[AtividadeController].editar(atividade.id.toString())}" class="btn btn-xs btn-warning">
                         Editar
                     </a>
-                    <form class="form form-inline" method="DELETE" action="${linkTo[AtividadeController].excluir()}${atividade.id.toString()}">
-                        <input type="submit" value="Excluir" class="btn btn-xs btn-danger" />
-                    </form>
+                    <a href="${linkTo[AtividadeController].excluir()}${atividade.id.toString()}" class="btn btn-xs btn-danger">
+                        Excluir
+                    </a>
                 </td>
             </tr>
         </c:forEach>
