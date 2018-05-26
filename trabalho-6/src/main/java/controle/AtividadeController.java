@@ -14,12 +14,12 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import modelo.Aluno;
-import persistencia.AlunoDAO;
+import modelo.Atividade;
+import persistencia.AtividadeDAO;
 import persistencia.exceptions.NonexistentEntityException;
 
 @Controller
-public class AlunoController {
+public class AtividadeController {
 
     @Inject
     private Result result;
@@ -29,50 +29,54 @@ public class AlunoController {
 
     @Inject
     private EntityManagerFactory emf;
-    
-    private AlunoDAO dao;
 
-    public AlunoController() {
+    private AtividadeDAO dao;
+
+    public AtividadeController() {
         this.emf = Persistence.createEntityManagerFactory("default");
-        this.dao = new AlunoDAO(emf);
+        this.dao = new AtividadeDAO(emf);
     }
 
     @Get
-    @Path("/aluno")
+    @Path("/atividade")
     public void listar() {
-        this.result.include("alunos", dao.findAlunoEntities());
+        this.result.include("atividades", dao.findAtividadeEntities());
     }
-    
-    
+
     @Get
-    @Path("/aluno/{id}")
-    public Aluno editar(int id) {
-        if (id < 0) return new Aluno();
-        return dao.findAluno(id);        
-    }    
-    
-    
+    @Path("/atividade/{id}")
+    public Atividade editar(int id) {
+        if (id < 0) {
+            return new Atividade();
+        }
+        return dao.findAtividade(id);
+    }
+
     @Delete
-    @Path("/aluno/{id}")
+    @Path("/atividade/{id}")
     public void excluir(int id) throws NonexistentEntityException {
         validation.onErrorForwardTo(this).listar();
         dao.destroy(id);
         this.result.redirectTo(this).listar();
     }
-    
-    
-    @Put
-    @Path("/aluno/editar")
-    public void editarPost(@NotNull @Valid Aluno aluno) throws Exception {
-        validation.onErrorForwardTo(this).editar(aluno.getId());
-        dao.edit(aluno);
+
+    @Post
+    @Path("/atividade/alterar")
+    public void editarPost(@NotNull @Valid Atividade atividade) throws Exception {
+        if (atividade != null) {
+            validation.onErrorForwardTo(this).editar(atividade.getId());
+        } else {
+            validation.onErrorForwardTo(this).listar();
+        }
+        dao.edit(atividade);
         this.result.redirectTo(this).listar();
     }
 
     @Post
-    @Path("/aluno/")
-    public void adicionar(@NotNull @Valid Aluno aluno) {
+    @Path("/atividade/")
+    public void adicionar(@NotNull @Valid Atividade atividade) {
         validation.onErrorForwardTo(this).listar();
-        dao.create(aluno);
+        dao.create(atividade);
+        this.result.redirectTo(this).listar();
     }
 }

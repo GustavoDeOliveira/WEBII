@@ -20,43 +20,42 @@ import javax.validation.constraints.Past;
 import javax.validation.constraints.Size;
 import javax.validation.constraints.Pattern;
 
-
-@Entity
+@Entity(name = "Aluno")
 @Table(name = "aluno")
 public class Aluno implements Serializable {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
     private int id;
-    
+
     @NotNull(message = "O nome não pode ser vazio.")
-    @Size(min=1, max=10, message = "O nome não pode ser vazio e não pode ter mais de 10 caractéres.") 
+    @Size(min = 1, max = 10, message = "O nome não pode ser vazio e não pode ter mais de 10 caractéres.")
     @Column(length = 10, nullable = false)
     private String nome;
-    
+
     @NotNull(message = "O cpf deve ser preenchido.")
-    @Size(min=11, max=11, message = "O cpf deve conter exatamente 11 dígitos, sem pontos nem traços.")
+    @Size(min = 11, max = 11, message = "O cpf deve conter exatamente 11 dígitos, sem pontos nem traços.")
     @Pattern(regexp = "^\\d+", message = "O cpf deve ser preenchido apenas com números.")
     @Column(length = 11, nullable = false)
     private String cpf;
-    
+
     @NotNull(message = "O email é obrigatório.")
-    @Pattern(regexp = "\\S+@S+\\.S+$", message = "Email inválido.")
+    @Pattern(regexp = "\\S+@\\S+\\.\\S+$", message = "Email inválido.")
     @Column(nullable = false)
     private String email;
-    
+
     @Column
     private String senha;
 
     @Past
-    @Column(columnDefinition = "ultimo_pagamento")
+    @Column(name = "ultimo_pagamento")
     private Date ultimoPagamento;
-    
-    @Column(columnDefinition = "prazo_pagamento")
+
+    @Column(name = "prazo_pagamento")
     private Date prazoPagamento;
-    
-    @ManyToMany(mappedBy = "atividade")
+
+    @ManyToMany(mappedBy = "alunos")
     private List<Atividade> atividades;
 
     public Aluno() {
@@ -109,7 +108,7 @@ public class Aluno implements Serializable {
     public void setPrazoPagamento(Date prazoPagamento) {
         this.prazoPagamento = prazoPagamento;
     }
-    
+
     public String getNome() {
         return nome;
     }
@@ -117,5 +116,13 @@ public class Aluno implements Serializable {
     public void setNome(String nome) {
         this.nome = nome;
     }
-    
+
+    public List<Atividade> getAtividades() {
+        return atividades;
+    }
+
+    public void setAtividades(List<Atividade> atividades) {
+        this.atividades = atividades;
+    }
+
 }

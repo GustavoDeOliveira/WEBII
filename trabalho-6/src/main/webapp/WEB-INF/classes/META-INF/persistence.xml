@@ -3,6 +3,8 @@
   <persistence-unit name="default" transaction-type="RESOURCE_LOCAL">
     <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
     <class>modelo.Atividade</class>
+    <class>modelo.Aluno</class>
+    <class>modelo.Usuario</class>
     <exclude-unlisted-classes>false</exclude-unlisted-classes>
     <validation-mode>CALLBACK</validation-mode>
     <properties>
@@ -10,6 +12,7 @@
       <property name="javax.persistence.jdbc.user" value="postgres"/>
       <property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver"/>
       <property name="javax.persistence.jdbc.password" value="postgres"/>
+      <property name="eclipselink.deploy-on-startup" value="true"/>
       <property name="javax.persistence.schema-generation.database.action" value="drop-and-create"/>
     </properties>
   </persistence-unit>
