@@ -81,17 +81,19 @@
                             <input type="text" name="nome" value="{{jogador.nome}}" class="form-control" autofocus required placeholder="Nome" />
                             <label for="posicao">Posição</label>
                             <select name="posicao" class="form-control" required>
-                            {{#posicoes}}
-                                <option value="{{ordinal}}">{{toString}}</option>
-                            {{/posicoes}}
+                                <option value="">Selecione uma posição</option>
+                                {{#posicoes}}
+                                    <option value="{{ordinal}}">{{toString}}</option>
+                                {{/posicoes}}
                             </select>
                             <input type="submit" value="Salvar" class="btn btn-success pull-right" />
                         </form>
 
-                        {{#editando}}
-                        <h3>Equipe</h3>
-                        <p>{{jogador.equipe.nome}}</p>
-                        {{/editando}}
+                        {{#temEquipe}}
+                            <h3><strong>Equipe: </strong>
+                                <a href="/equipe/editar/{{jogador.equipe.id}}">{{jogador.equipe.nome}}</a>
+                            </h3>
+                        {{/temEquipe}}
 
 
                     </div>

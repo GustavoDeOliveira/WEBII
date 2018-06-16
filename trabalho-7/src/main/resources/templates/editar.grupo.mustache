@@ -85,30 +85,32 @@
                         </form>
 
                         {{#editando}}
-                        <h3>Equipes</h3>
-                        <form method="POST" class="form form-inline" action="/grupo/adicionar/{{id}}">
-                            <select class="form-control" name="equipe" required>
-                                <option value="">Selecione uma equipe</option>
-                                {{#equipes}}
-                                <option value="${id}">${nome}</option>
-                                {{/equipes}}
-                            </select>
-                            <input type="submit" value="Adicionar" class="btn btn-success" />
-                        </form>
-                        <ul class="list-group">
-                            {{#grupo.equipes}}
-                            <li class="list-group-item">
-                                {{nome}}
-                                <form method="GET" action="/grupo/remover/{{id}}">
-                                    <input type="hidden" name="equipe" value="{{id}}" />
-                                    <input type="submit" value="Remover" class="btn btn-danger btn-sm" />
+                            <h3>Seleções ({{grupo.equipes.size}}/4)</h3>
+                            {{#vago}}
+                                <form method="POST" class="form form-inline" action="/grupo/adicionar/{{grupo.id}}">
+                                    <select class="form-control" name="equipe" required>
+                                        <option value="">Selecione uma equipe</option>
+                                        {{#equipes}}
+                                            <option value="{{id}}">{{nome}}</option>
+                                        {{/equipes}}
+                                    </select>
+                                    <input type="submit" value="Adicionar" class="btn btn-success" />
                                 </form>
-                                <a href="/equipe/editar/{{id}}" class="btn btn-warning btn-sm">
-                                    Editar
-                                </a>
-                            </li>
-                            {{/grupo.equipes}}
-                        </ul>
+                            {{/vago}}
+                            <table class="table table-hover">
+                                {{#grupo.equipes}}
+                                    <tr>
+                                        <td><h4>{{nome}}</h4></td>
+                                        <td width="100"><form method="POST" action="/grupo/remover/{{grupo.id}}">
+                                            <input type="hidden" name="equipe" value="{{id}}" />
+                                            <input type="submit" value="Remover" class="btn btn-danger btn-sm" />
+                                        </form></td>
+                                        <td width="100"><a href="/equipe/editar/{{id}}" class="btn btn-warning btn-sm">
+                                            Editar
+                                        </a></td>
+                                    </tr>
+                                {{/grupo.equipes}}
+                            </table>
                         {{/editando}}
 
 

@@ -16,7 +16,6 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import modelo.Grupo;
-import persistencia.exceptions.IllegalOrphanException;
 import persistencia.exceptions.NonexistentEntityException;
 
 /**
@@ -66,7 +65,7 @@ public class GrupoJpaController implements Serializable {
         }
     }
 
-    public void edit(Grupo grupo) throws IllegalOrphanException, NonexistentEntityException, Exception {
+    public void edit(Grupo grupo) throws NonexistentEntityException, Exception {
         EntityManager em = null;
         try {
             em = getEntityManager();
@@ -74,18 +73,6 @@ public class GrupoJpaController implements Serializable {
             Grupo persistentGrupo = em.find(Grupo.class, grupo.getId());
             List<Equipe> equipesOld = persistentGrupo.getEquipes();
             List<Equipe> equipesNew = grupo.getEquipes();
-            List<String> illegalOrphanMessages = null;
-            for (Equipe equipesOldEquipe : equipesOld) {
-                if (!equipesNew.contains(equipesOldEquipe)) {
-                    if (illegalOrphanMessages == null) {
-                        illegalOrphanMessages = new ArrayList<String>();
-                    }
-                    illegalOrphanMessages.add("You must retain Equipe " + equipesOldEquipe + " since its grupo field is not nullable.");
-                }
-            }
-            if (illegalOrphanMessages != null) {
-                throw new IllegalOrphanException(illegalOrphanMessages);
-            }
             List<Equipe> attachedEquipesNew = new ArrayList<Equipe>();
             for (Equipe equipesNewEquipeToAttach : equipesNew) {
                 equipesNewEquipeToAttach = em.getReference(equipesNewEquipeToAttach.getClass(), equipesNewEquipeToAttach.getId());
@@ -94,6 +81,12 @@ public class GrupoJpaController implements Serializable {
             equipesNew = attachedEquipesNew;
             grupo.setEquipes(equipesNew);
             grupo = em.merge(grupo);
+            for (Equipe equipesOldEquipe : equipesOld) {
+                if (!equipesNew.contains(equipesOldEquipe)) {
+                    equipesOldEquipe.setGrupo(null);
+                    equipesOldEquipe = em.merge(equipesOldEquipe);
+                }
+            }
             for (Equipe equipesNewEquipe : equipesNew) {
                 if (!equipesOld.contains(equipesNewEquipe)) {
                     Grupo oldGrupoOfEquipesNewEquipe = equipesNewEquipe.getGrupo();
@@ -122,7 +115,7 @@ public class GrupoJpaController implements Serializable {
         }
     }
 
-    public void destroy(int id) throws IllegalOrphanException, NonexistentEntityException {
+    public void destroy(int id) throws NonexistentEntityException {
         EntityManager em = null;
         try {
             em = getEntityManager();
@@ -134,16 +127,10 @@ public class GrupoJpaController implements Serializable {
             } catch (EntityNotFoundException enfe) {
                 throw new NonexistentEntityException("The grupo with id " + id + " no longer exists.", enfe);
             }
-            List<String> illegalOrphanMessages = null;
-            List<Equipe> equipesOrphanCheck = grupo.getEquipes();
-            for (Equipe equipesOrphanCheckEquipe : equipesOrphanCheck) {
-                if (illegalOrphanMessages == null) {
-                    illegalOrphanMessages = new ArrayList<String>();
-                }
-                illegalOrphanMessages.add("This Grupo (" + grupo + ") cannot be destroyed since the Equipe " + equipesOrphanCheckEquipe + " in its equipes field has a non-nullable grupo field.");
-            }
-            if (illegalOrphanMessages != null) {
-                throw new IllegalOrphanException(illegalOrphanMessages);
+            List<Equipe> equipes = grupo.getEquipes();
+            for (Equipe equipesEquipe : equipes) {
+                equipesEquipe.setGrupo(null);
+                equipesEquipe = em.merge(equipesEquipe);
             }
             em.remove(grupo);
             em.getTransaction().commit();

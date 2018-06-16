@@ -34,7 +34,9 @@ public class Grupo implements Serializable {
     @Column(nullable = false)
     private String cidade;
     
-    @OneToMany(mappedBy = "grupo", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "grupo", cascade = {
+        CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH
+    })
     private List<Equipe> equipes;
 
     public Grupo() {

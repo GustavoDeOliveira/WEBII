@@ -9,10 +9,11 @@ package app;
  *
  * @author iapereira
  */
-import controller.AlunoController;
 import controller.EquipeController;
 import controller.GrupoController;
+import controller.IndexController;
 import controller.JogadorController;
+import modelo.Usuario;
 import spark.Request;
 import spark.Response;
 import static spark.Spark.before;
@@ -27,45 +28,52 @@ public class Main {
 
         staticFiles.location("/public"); // Static files
         
-        AlunoController alunoController = new AlunoController();
+        IndexController indexController = new IndexController();
         GrupoController grupoController = new GrupoController();
         EquipeController equipeController = new EquipeController();
         JogadorController jogadorController = new JogadorController();
 
-        before((Request req, Response res) -> {
-            if (req.session() == null || "".equals(req.session().attribute("usuario"))) {
-                
+        before((Request rq, Response rs) -> {
+            int id = rq.session().attribute("usuario") != null ? rq.session().attribute("usuario") : 0;
+            boolean logado = rq.session() != null && id != 0;
+            rq.attribute("logado", logado);
+            if (logado) {
+                indexController.setRequest(rq);
+                indexController.setResponse(rs);
+                Usuario u = indexController.usuario(id);
+                rq.attribute("usuario", u);
+            }
+            if (!"/logar".equals(rq.uri()) && !"/".equals(rq.uri())) {
+                if (!logado) {
+                    rs.redirect("/");
+                }
             }
         });
-//        
-//        
-//        after((request, response) -> {
-//            System.out.println("=======================");
-//            System.out.println("Veio depois...");            
-//            System.out.println("=======================");
-//        });
-
-//        get("/", (rq, rs) -> {
-//            alunoController.setRequest(rq);
-//            alunoController.setResponse(rs);
-//            return alunoController.tela_adicionar();
-//        }, new MustacheTemplateEngine());
-//
-//        post("/adicionar", (req, res) -> {
-//            return "O que veio pra mim pelo form:" + req.queryMap().get("nome").value();
-//        });
-//
-//        get("/deletar/:matricula", (req, res) ->  {
-//            return "O que veio pra mim pelo form:" + Integer.parseInt(req.params(":matricula"));
-//        });
-//        get("/listar", (rq, rs) -> {
-//            alunoController.setRequest(rq);
-//            alunoController.setResponse(rs);
-//            return alunoController.listar();
-//        }, new MustacheTemplateEngine());
+        
+        
+        // LOGIN
+        get("/", (rq, rs) -> {
+            indexController.setRequest(rq);
+            indexController.setResponse(rs);
+            return indexController.index();
+        }, new MustacheTemplateEngine());
+        
+        get("/deslogar", (rq, rs) -> {
+            indexController.setRequest(rq);
+            indexController.setResponse(rs);
+            indexController.logout();
+            return null;
+        });
+        
+        post("/logar", (rq, rs) -> {
+            indexController.setRequest(rq);
+            indexController.setResponse(rs);
+            indexController.login();
+            return null;
+        });
+        
         
         // GRUPOS
-
         get("/grupo", (rq, rs) -> {
             grupoController.setRequest(rq);
             grupoController.setResponse(rs);
@@ -75,10 +83,9 @@ public class Main {
         get("/grupo/", (rq, rs) -> {rs.redirect("/grupo"); return null;});
         
         get("/grupo/editar/:id", (rq, rs) -> {
-            int id = Integer.parseInt(rq.params(":id"));
             grupoController.setRequest(rq);
             grupoController.setResponse(rs);
-            return grupoController.editar(id);
+            return grupoController.editar();
         }, new MustacheTemplateEngine());
 
         post("/grupo/salvar", (rq, rs) -> {
@@ -87,12 +94,25 @@ public class Main {
             grupoController.salvar();
             return null;
         });
-
-        get("/grupo/excluir/:id", (rq, rs) -> {
-            int id = Integer.parseInt(rq.params(":id"));
+        
+        post("/grupo/adicionar/:grupo", (rq, rs) -> {
             grupoController.setRequest(rq);
             grupoController.setResponse(rs);
-            grupoController.excluir(id);
+            grupoController.adicionar();
+            return null;
+        });
+        
+        post("/grupo/remover/:grupo", (rq, rs) -> {
+            grupoController.setRequest(rq);
+            grupoController.setResponse(rs);
+            grupoController.remover();
+            return null;
+        });
+
+        get("/grupo/excluir/:id", (rq, rs) -> {
+            grupoController.setRequest(rq);
+            grupoController.setResponse(rs);
+            grupoController.excluir();
             return null;
         }, new MustacheTemplateEngine());
         
@@ -118,6 +138,20 @@ public class Main {
             equipeController.setRequest(rq);
             equipeController.setResponse(rs);
             equipeController.salvar();
+            return null;
+        });
+        
+        post("/equipe/adicionar/:equipe", (rq, rs) -> {
+            equipeController.setRequest(rq);
+            equipeController.setResponse(rs);
+            equipeController.adicionar();
+            return null;
+        });
+        
+        post("/equipe/remover/:equipe", (rq, rs) -> {
+            equipeController.setRequest(rq);
+            equipeController.setResponse(rs);
+            equipeController.remover();
             return null;
         });
 

@@ -8,11 +8,10 @@ package controller;
 import java.util.HashMap;
 import java.util.Map;
 import javax.persistence.Persistence;
+import modelo.Equipe;
 import modelo.Grupo;
 import persistencia.EquipeDAO;
 import persistencia.GrupoDAO;
-import persistencia.exceptions.IllegalOrphanException;
-import persistencia.exceptions.NonexistentEntityException;
 import spark.ModelAndView;
 
 /**
@@ -33,27 +32,35 @@ public class GrupoController extends Controller {
         try {
             map.put("grupos", dao.findGrupoEntities());
         } catch (Exception ex) {
-            System.err.println(ex);
-            response.body(response.body() + "&msg=Erro ao listar grupos.");
+            System.err.println(ex.getMessage());
         }
+        map.put("usuario", request.attribute("usuario"));
+        map.put("logado", request.attribute("logado"));
         return new ModelAndView(map, "listar.grupo.mustache");
     }
 
-    public ModelAndView editar(int id) {
+    public ModelAndView editar() {
         Map map = new HashMap();
         try {
-            map.put("grupo", dao.findGrupo(id));
+            int id = Integer.parseInt(request.params(":id"));
+            Grupo g = dao.findGrupo(id);
+            map.put("grupo", g);
             if(id > 0)
             {
-                map.put("equipes",
-                    new EquipeDAO(dao.getEntityManager().getEntityManagerFactory()).findEquipesNotInAnyGroup()
-                );
+                boolean vago = g.getEquipes().size() < 4;
+                if (vago){
+                    map.put("equipes",
+                        new EquipeDAO(dao.getEntityManager().getEntityManagerFactory()).findTeamsNotInAnyGroup()
+                    );
+                }
+                map.put("vago", vago);
                 map.put("editando", true);
             }
         } catch (Exception ex) {
-            System.err.println(ex);
-            response.body(response.body() + "&msg=Erro ao editar grupo.");
+            System.err.println(ex.getMessage());
         }
+        map.put("usuario", request.attribute("usuario"));
+        map.put("logado", request.attribute("logado"));
         return new ModelAndView(map, "editar.grupo.mustache");
     }
     
@@ -74,19 +81,48 @@ public class GrupoController extends Controller {
                 dao.create(grupo);
             }
         } catch (Exception ex) {
-            System.err.println(ex);
-            response.body(response.body() + "&msg=Erro ao salvar grupo.");
+            System.err.println(ex.getMessage());
         }
         response.redirect("/grupo");
     }
     
-    public void excluir(int id) {
+    public void excluir() {
         try {
+            int id = Integer.parseInt(request.params(":id"));
             dao.destroy(id);
-        } catch (IllegalOrphanException | NonexistentEntityException ex) {
-            System.err.println(ex);
-            response.body(response.body() + "&msg=Erro ao excluir grupo.");
+        } catch (Exception ex) {
+            System.err.println(ex.getMessage());
         }
         response.redirect("/grupo");
+    }
+
+    public void adicionar() {
+        int grupoId = Integer.parseInt(request.params(":grupo"));
+        try {
+            int equipeId = request.queryMap().get("equipe").integerValue();
+            Grupo grupo = dao.findGrupo(grupoId);
+            Equipe equipe = new EquipeDAO(dao.getEntityManager().getEntityManagerFactory()).findEquipe(equipeId);
+            grupo.getEquipes().add(equipe);
+            equipe.setGrupo(grupo);
+            dao.edit(grupo);
+        } catch (Exception ex) {
+            System.err.println(ex.getMessage());
+        }
+        response.redirect("/grupo/editar/" + grupoId);
+    }
+    
+    public void remover() {
+        int grupoId = Integer.parseInt(request.params(":grupo"));
+        try {
+            int equipeId = request.queryMap().get("equipe").integerValue();
+            Grupo grupo = dao.findGrupo(grupoId);
+            Equipe equipe = new EquipeDAO(dao.getEntityManager().getEntityManagerFactory()).findEquipe(equipeId);
+            grupo.getEquipes().remove(equipe);
+            equipe.setGrupo(null);
+            dao.edit(grupo);
+        } catch (Exception ex) {
+            System.err.println(ex.getMessage());
+        }
+        response.redirect("/grupo/editar/" + grupoId);
     }
 }

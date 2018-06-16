@@ -4,7 +4,7 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" lang="pt-br">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-        <title>Academia</title>
+        <title>Copa do Mundo 2018</title>
 
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
@@ -53,66 +53,14 @@
                             </h3>
                         </div>
                         <div class="panel-body">
-                            {{#erro}}
-                                <div class="panel panel-danger">
-                                    <div class="panel-heading">
-                                        <h4 class="panel-title">
-                                            <a data-toggle="collapse" data-target="#erros">Ocorreram erros</a>
-                                        </h4>
-                                    </div>
-                                    <div id="erros" class="panel-collapse collapse in">
-                                        <ul class="list-group">
-                                            {{#erros}}
-                                                <li class="list-group-item list-group-item-danger">
-                                                    <strong>{{erro.msg}}</strong>
-                                                </li>
-                                            {{/erros}}
-                                        </ul>
-                                        <div class="panel-footer panel-danger"></div>
-                                    </div>
-                                </div>
-                            {{/erro}}
-
-                            <h2>Seleções ({{equipes.size}}/32)</h2>
-
-                            <table class="table table-hover">
-                                <thead>
-                                    <tr>
-                                        <th>Nome</th>
-                                        <th>Grupo</th>
-                                        <th width="100">Jogadores</th>
-                                        <th width="160">Ações</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {{#equipes}}
-                                    <tr>
-                                        <td>{{nome}}</td>
-                                        <td>{{grupo.nome}}</td>
-                                        <td>{{jogadores.size}}/23</td>
-                                        <td>
-                                            <a href="/equipe/editar/{{id}}" class="btn btn-xs btn-warning">
-                                                Editar
-                                            </a>
-                                            <a href="/equipe/excluir/{{id}}" class="btn btn-xs btn-danger">
-                                                Excluir
-                                            </a>
-                                        </td>
-                                    </tr>
-                                    {{/equipes}}
-                                </tbody>
-                                <tfoot>
-                                    {{#vago}}
-                                    <tr>
-                                        <th colspan="4">
-                                            <a class="btn btn-success btn-block" href="/equipe/editar/0">
-                                                <strong>&plus;</strong>
-                                            </a>
-                                        </th>
-                                    </tr>
-                                    {{/vago}}
-                                </tfoot>
-                            </table>
+                            
+                            <form method="POST" action="/logar">
+                                <label for="login">Login</label>
+                                <input type="text" name="login" class="form-control" required />
+                                <label for="senha">Senha</label>
+                                <input type="password" name="senha" class="form-control" required />
+                                <input type="submit" value="Logar" class="btn btn-success pull-right" />
+                            </form>
 
                         </div>
                         <div class="panel-footer">
@@ -128,3 +76,4 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 </body>
 </html>
+

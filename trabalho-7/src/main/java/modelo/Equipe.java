@@ -34,7 +34,9 @@ public class Equipe implements Serializable {
     @Column(nullable = false)
     private String nome;
     
-    @OneToMany(mappedBy = "equipe", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "equipe", cascade = {
+        CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH
+    })
     private List<Jogador> jogadores;
     
     @ManyToOne(fetch = FetchType.LAZY)

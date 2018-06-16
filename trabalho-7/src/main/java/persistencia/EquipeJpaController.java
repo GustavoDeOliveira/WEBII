@@ -17,7 +17,6 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import modelo.Equipe;
-import persistencia.exceptions.IllegalOrphanException;
 import persistencia.exceptions.NonexistentEntityException;
 
 /**
@@ -76,7 +75,7 @@ public class EquipeJpaController implements Serializable {
         }
     }
 
-    public void edit(Equipe equipe) throws IllegalOrphanException, NonexistentEntityException, Exception {
+    public void edit(Equipe equipe) throws NonexistentEntityException, Exception {
         EntityManager em = null;
         try {
             em = getEntityManager();
@@ -86,18 +85,6 @@ public class EquipeJpaController implements Serializable {
             Grupo grupoNew = equipe.getGrupo();
             List<Jogador> jogadoresOld = persistentEquipe.getJogadores();
             List<Jogador> jogadoresNew = equipe.getJogadores();
-            List<String> illegalOrphanMessages = null;
-            for (Jogador jogadoresOldJogador : jogadoresOld) {
-                if (!jogadoresNew.contains(jogadoresOldJogador)) {
-                    if (illegalOrphanMessages == null) {
-                        illegalOrphanMessages = new ArrayList<String>();
-                    }
-                    illegalOrphanMessages.add("You must retain Jogador " + jogadoresOldJogador + " since its equipe field is not nullable.");
-                }
-            }
-            if (illegalOrphanMessages != null) {
-                throw new IllegalOrphanException(illegalOrphanMessages);
-            }
             if (grupoNew != null) {
                 grupoNew = em.getReference(grupoNew.getClass(), grupoNew.getId());
                 equipe.setGrupo(grupoNew);
@@ -117,6 +104,12 @@ public class EquipeJpaController implements Serializable {
             if (grupoNew != null && !grupoNew.equals(grupoOld)) {
                 grupoNew.getEquipes().add(equipe);
                 grupoNew = em.merge(grupoNew);
+            }
+            for (Jogador jogadoresOldJogador : jogadoresOld) {
+                if (!jogadoresNew.contains(jogadoresOldJogador)) {
+                    jogadoresOldJogador.setEquipe(null);
+                    jogadoresOldJogador = em.merge(jogadoresOldJogador);
+                }
             }
             for (Jogador jogadoresNewJogador : jogadoresNew) {
                 if (!jogadoresOld.contains(jogadoresNewJogador)) {
@@ -146,7 +139,7 @@ public class EquipeJpaController implements Serializable {
         }
     }
 
-    public void destroy(int id) throws IllegalOrphanException, NonexistentEntityException {
+    public void destroy(int id) throws NonexistentEntityException {
         EntityManager em = null;
         try {
             em = getEntityManager();
@@ -158,21 +151,15 @@ public class EquipeJpaController implements Serializable {
             } catch (EntityNotFoundException enfe) {
                 throw new NonexistentEntityException("The equipe with id " + id + " no longer exists.", enfe);
             }
-            List<String> illegalOrphanMessages = null;
-            List<Jogador> jogadoresOrphanCheck = equipe.getJogadores();
-            for (Jogador jogadoresOrphanCheckJogador : jogadoresOrphanCheck) {
-                if (illegalOrphanMessages == null) {
-                    illegalOrphanMessages = new ArrayList<String>();
-                }
-                illegalOrphanMessages.add("This Equipe (" + equipe + ") cannot be destroyed since the Jogador " + jogadoresOrphanCheckJogador + " in its jogadores field has a non-nullable equipe field.");
-            }
-            if (illegalOrphanMessages != null) {
-                throw new IllegalOrphanException(illegalOrphanMessages);
-            }
             Grupo grupo = equipe.getGrupo();
             if (grupo != null) {
                 grupo.getEquipes().remove(equipe);
                 grupo = em.merge(grupo);
+            }
+            List<Jogador> jogadores = equipe.getJogadores();
+            for (Jogador jogadoresJogador : jogadores) {
+                jogadoresJogador.setEquipe(null);
+                jogadoresJogador = em.merge(jogadoresJogador);
             }
             em.remove(equipe);
             em.getTransaction().commit();

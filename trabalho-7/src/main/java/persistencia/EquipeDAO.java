@@ -12,10 +12,22 @@ public class EquipeDAO extends EquipeJpaController {
         super(emf);
     }
     
-    public List<Equipe> findEquipesNotInAnyGroup() {
+    public boolean isRepeated(Equipe e) {
         EntityManager em = getEntityManager();
         try {
-            Query q = em.createQuery("SELECT e FROM Equipe e WHERE e.grupo.id = 0");
+            Query q = em.createQuery("SELECT e FROM Equipe e WHERE e.nome = :nome AND e.id != :id");
+            q.setParameter("nome", e.getNome());
+            q.setParameter("id", e.getId());
+            return !q.getResultList().isEmpty();
+        } finally {
+            em.close();
+        }
+    }
+    
+    public List<Equipe> findTeamsNotInAnyGroup() {
+        EntityManager em = getEntityManager();
+        try {
+            Query q = em.createQuery("SELECT e FROM Equipe e WHERE e.grupo IS NULL");
             return q.getResultList();
         } finally {
             em.close();

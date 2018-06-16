@@ -12,10 +12,10 @@ public class JogadorDAO extends JogadorJpaController {
         super(emf);
     }
     
-    public List<Equipe> findJogadoresNotInAnyEquipe() {
+    public List<Equipe> findPlayersNotInAnyTeam() {
         EntityManager em = getEntityManager();
         try {
-            Query q = em.createQuery("SELECT e FROM Equipe e WHERE e.grupo.id = 0");
+            Query q = em.createQuery("SELECT j FROM Jogador j WHERE j.equipe IS NULL");
             return q.getResultList();
         } finally {
             em.close();

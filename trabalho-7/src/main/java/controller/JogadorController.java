@@ -11,7 +11,6 @@ import javax.persistence.Persistence;
 import modelo.Jogador;
 import modelo.Posicao;
 import persistencia.JogadorDAO;
-import persistencia.exceptions.IllegalOrphanException;
 import persistencia.exceptions.NonexistentEntityException;
 import spark.ModelAndView;
 
@@ -33,22 +32,26 @@ public class JogadorController extends Controller {
         try {
             map.put("jogadores", dao.findJogadorEntities());
         } catch (Exception ex) {
-            System.err.println(ex);
-            response.body(response.body() + "&msg=Erro ao listar jogadores.");
+            System.err.println(ex.getMessage());
         }
+        map.put("usuario", request.attribute("usuario"));
+        map.put("logado", request.attribute("logado"));
         return new ModelAndView(map, "listar.jogador.mustache");
     }
 
     public ModelAndView editar(int id) {
         Map map = new HashMap();
         try {
-            map.put("jogador", dao.findJogador(id));
+            Jogador j = dao.findJogador(id);
+            map.put("jogador", j);
             map.put("posicoes", Posicao.values());
             map.put("editando", id > 0);
+            map.put("temEquipe", j.getEquipe() != null);
         } catch (Exception ex) {
-            System.err.println(ex);
-            response.body(response.body() + "&msg=Erro ao editar jogador.");
+            System.err.println(ex.getMessage());
         }
+        map.put("usuario", request.attribute("usuario"));
+        map.put("logado", request.attribute("logado"));
         return new ModelAndView(map, "editar.jogador.mustache");
     }
 
@@ -70,8 +73,7 @@ public class JogadorController extends Controller {
                 dao.create(jogador);
             }
         } catch (Exception ex) {
-            System.err.println(ex);
-            response.body(response.body() + "&msg=Erro ao salvar jogador.");
+            System.err.println(ex.getMessage());
         }
         response.redirect("/jogador");
     }
@@ -80,8 +82,7 @@ public class JogadorController extends Controller {
         try {
             dao.destroy(id);
         } catch (NonexistentEntityException ex) {
-            System.err.println(ex);
-            response.body(response.body() + "&msg=Erro ao excluir jogador.");
+            System.err.println(ex.getMessage());
         }
         response.redirect("/jogador");
     }

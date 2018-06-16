@@ -83,29 +83,37 @@
                         </form>
 
                         {{#editando}}
-                        <h3>Jogadores</h3>
-                        <form method="POST" class="form form-inline" action="/equipe/adicionar/{{id}}">
-                            <select class="form-control" name="jogador" required>
-                                <option value="">Selecione um jogador</option>
-                                {{#jogadores}}
-                                <option value="${id}">${nome}</option>
-                                {{/jogadores}}
-                            </select>
-                            <input type="submit" value="Adicionar" class="btn btn-success" />
-                        </form>
-                        <ul class="list-group">
-                            {{#equipe.jogadores}}
-                            <li class="list-group-item">
-                                {{nome}}
-                                <a href="/equipe/remover/{{id}}" class="btn btn-danger btn-sm">
-                                    Remover
-                                </a>
-                                <a href="/equipe/editar/{{id}}" class="btn btn-warning btn-sm">
-                                    Editar
-                                </a>
-                            </li>
-                            {{/equipe.jogadores}}
-                        </ul>
+                            {{#temGrupo}}
+                                <h3><strong>Grupo: </strong>
+                                    <a href="/grupo/editar/{{equipe.grupo.id}}">{{equipe.grupo.nome}}</a>
+                                </h3>
+                            {{/temGrupo}}
+                            <h3>Jogadores ({{equipe.jogadores.size}}/23)</h3>
+                            {{#vago}}
+                                <form method="POST" class="form form-inline" action="/equipe/adicionar/{{equipe.id}}">
+                                    <select class="form-control" name="jogador" required>
+                                        <option value="">Selecione um jogador</option>
+                                        {{#jogadores}}
+                                            <option value="{{id}}">{{nome}}</option>
+                                        {{/jogadores}}
+                                    </select>
+                                    <input type="submit" value="Adicionar" class="btn btn-success" />
+                                </form>
+                            {{/vago}}
+                            <table class="table table-hover">
+                                {{#equipe.jogadores}}
+                                    <tr>
+                                        <td><h4>{{nome}}</h4></td>
+                                        <td width="100"><form method="POST" action="/equipe/remover/{{equipe.id}}">
+                                            <input type="hidden" name="jogador" value="{{id}}" />
+                                            <input type="submit" value="Remover" class="btn btn-danger btn-sm" />
+                                        </form></td>
+                                        <td width="100"><a href="/jogador/editar/{{id}}" class="btn btn-warning btn-sm">
+                                            Editar
+                                        </a></td>
+                                    </tr>
+                                {{/equipe.jogadores}}
+                            </table>
                         {{/editando}}
 
 

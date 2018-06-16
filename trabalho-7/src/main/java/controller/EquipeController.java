@@ -6,9 +6,12 @@
 package controller;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.persistence.Persistence;
 import modelo.Equipe;
+import modelo.Grupo;
+import modelo.Jogador;
 import persistencia.EquipeDAO;
 import persistencia.JogadorDAO;
 import persistencia.exceptions.IllegalOrphanException;
@@ -31,28 +34,38 @@ public class EquipeController extends Controller {
     public ModelAndView listar() {
         Map map = new HashMap();
         try {
-            map.put("equipes", dao.findEquipeEntities());
+            List<Equipe> e = dao.findEquipeEntities();
+            map.put("equipes", e);
+            map.put("vago", e.size() < 32);
         } catch (Exception ex) {
-            System.err.println(ex);
-            response.body(response.body() + "&msg=Erro ao listar equipes.");
+            System.err.println(ex.getMessage());
         }
+        map.put("usuario", request.attribute("usuario"));
+        map.put("logado", request.attribute("logado"));
         return new ModelAndView(map, "listar.equipe.mustache");
     }
 
     public ModelAndView editar(int id) {
         Map map = new HashMap();
         try {
-            map.put("equipe", dao.findEquipe(id));
+            Equipe e = dao.findEquipe(id);
+            map.put("equipe", e);
             if (id > 0) {
-                map.put("jogadores",
-                        new JogadorDAO(dao.getEntityManager().getEntityManagerFactory()).findJogadoresNotInAnyEquipe()
-                );
+                boolean vago = e.getJogadores().size() < 23;
+                if (vago){
+                    map.put("jogadores",
+                        new JogadorDAO(dao.getEntityManager().getEntityManagerFactory()).findPlayersNotInAnyTeam()
+                    );
+                }
                 map.put("editando", true);
+                map.put("vago", vago);
+                map.put("temGrupo", e.getGrupo() != null);
             }
         } catch (Exception ex) {
-            System.err.println(ex);
-            response.body(response.body() + "&msg=Erro ao editar equipe.");
+            System.err.println(ex.getMessage());
         }
+        map.put("usuario", request.attribute("usuario"));
+        map.put("logado", request.attribute("logado"));
         return new ModelAndView(map, "editar.equipe.mustache");
     }
 
@@ -64,17 +77,18 @@ public class EquipeController extends Controller {
             Equipe equipe = new Equipe();
             equipe.setId(id);
             equipe.setNome(nome);
-            if (equipe.getId() > 0) {
-                Equipe e = dao.findEquipe(equipe.getId());
-                equipe.setJogadores(e.getJogadores());
-                equipe.setGrupo(e.getGrupo());
-                dao.edit(equipe);
-            } else {
-                dao.create(equipe);
+            if (!dao.isRepeated(equipe)) {
+                if (equipe.getId() > 0) {
+                    Equipe e = dao.findEquipe(equipe.getId());
+                    equipe.setJogadores(e.getJogadores());
+                    equipe.setGrupo(e.getGrupo());
+                    dao.edit(equipe);
+                } else {
+                    dao.create(equipe);
+                }
             }
         } catch (Exception ex) {
-            System.err.println(ex);
-            response.body(response.body() + "&msg=Erro ao salvar equipe.");
+            System.err.println(ex.getMessage());
         }
         response.redirect("/equipe");
     }
@@ -82,10 +96,39 @@ public class EquipeController extends Controller {
     public void excluir(int id) {
         try {
             dao.destroy(id);
-        } catch (IllegalOrphanException | NonexistentEntityException ex) {
-            System.err.println(ex);
-            response.body(response.body() + "&msg=Erro ao excluir equipe.");
+        } catch (NonexistentEntityException ex) {
+            System.err.println(ex.getMessage());
         }
         response.redirect("/equipe");
+    }
+    
+    public void adicionar() {
+        int equipeId = Integer.parseInt(request.params(":equipe"));
+        try {
+            int jogadorId = request.queryMap().get("jogador").integerValue();
+            Equipe equipe = dao.findEquipe(equipeId);
+            Jogador jogador = new JogadorDAO(dao.getEntityManager().getEntityManagerFactory()).findJogador(jogadorId);
+            equipe.getJogadores().add(jogador);
+            jogador.setEquipe(equipe);
+            dao.edit(equipe);
+        } catch (Exception ex) {
+            System.err.println(ex.getMessage());
+        }
+        response.redirect("/equipe/editar/" + equipeId);
+    }
+    
+    public void remover() {
+        int equipeId = Integer.parseInt(request.params(":equipe"));
+        try {
+            int jogadorId = request.queryMap().get("jogador").integerValue();
+            Equipe equipe = dao.findEquipe(equipeId);
+            Jogador jogador = new JogadorDAO(dao.getEntityManager().getEntityManagerFactory()).findJogador(jogadorId);
+            equipe.getJogadores().remove(jogador);
+            jogador.setEquipe(null);
+            dao.edit(equipe);
+        } catch (Exception ex) {
+            System.err.println(ex.getMessage());
+        }
+        response.redirect("/equipe/editar/" + equipeId);
     }
 }
