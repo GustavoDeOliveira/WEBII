@@ -12,19 +12,10 @@ import modelo.Jogador;
 import spark.ModelAndView;
 import spark.template.mustache.MustacheTemplateEngine;
 
-/**
- *
- * @author iapereira
- */
 public class IndexController extends Controller {
 
     public ModelAndView index() {
         Map map = new HashMap();
-        ArrayList<Jogador> vetAluno = new ArrayList();
-        //vetAluno.add(new Jogador(11230193, "Gustavo"));
-        //vetAluno.add(new Jogador(43622, "Igor"));
-        map.put("vetAluno", vetAluno);
-//        map.put("vetAluno", new AlunoDAO().listar());
         return new ModelAndView(map, "listar.mustache");
     }
 

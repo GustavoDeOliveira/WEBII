@@ -38,7 +38,7 @@ public class Equipe implements Serializable {
     private List<Jogador> jogadores;
     
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(nullable = false)
+    @JoinColumn
     private Grupo grupo;
 
     public Equipe() {

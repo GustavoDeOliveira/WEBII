@@ -36,7 +36,7 @@ public class Jogador implements Serializable {
     private Posicao posicao;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(nullable = false)
+    @JoinColumn
     private Equipe equipe;
 
     public Jogador() {
