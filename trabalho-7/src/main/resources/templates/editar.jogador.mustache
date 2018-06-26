@@ -80,6 +80,7 @@
                             <label for="nome">Nome</label>
                             <input type="text" name="nome" value="{{jogador.nome}}" class="form-control" autofocus required placeholder="Nome" />
                             <label for="posicao">Posição</label>
+                            <input type="hidden" id="posicao-atual" value="{{jogador.posicao.ordinal}}" />
                             <select name="posicao" class="form-control" required>
                                 <option value="">Selecione uma posição</option>
                                 {{#posicoes}}
@@ -103,6 +104,14 @@
 
                     <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
                     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+                    <script>
+$(function() {
+	var hidden = $('#posicao-atual');
+	var pos = hidden.val();
+	$('select [name=posicao] option [val=' + pos + ']').prop('selected', true);
+	hidden.remove();
+});
+</script>
                 </body>
                 </html>
 

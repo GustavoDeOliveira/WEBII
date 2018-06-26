@@ -26,10 +26,10 @@ public class Jogador implements Serializable {
     @Column
     private int id;
 
-    @Column(length = 10, nullable = false)
+    @Column(nullable = false)
     private String nome;
 
-    @Column(length = 11, nullable = false)
+    @Column(nullable = false)
     private int idade;
 
     @Column(nullable = false)
